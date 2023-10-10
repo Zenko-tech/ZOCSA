@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { ERC721Token, ERC721Checkpoint } from "../shared/Structs.sol";
+import { ERC721Token, ERC721Checkpoint, ERC721Infos } from "../shared/Structs.sol";
 import { AppStorage, LibAppStorage } from "./LibAppStorage.sol";
 import { IERC20 } from "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import { IERC721Receiver } from "lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol";
@@ -226,6 +226,55 @@ library LibERC721 {
         totalDividend += t.dividendsTempBalance[user];
         totalDividend += t.dividends[user];
         return totalDividend;
+    }
+
+    function getAllCollectionsInfos() internal view returns (ERC721Infos[] memory) {
+        address[] memory collections = LibAppStorage.diamondStorage().erc721Collections;
+        uint256 length = collections.length;
+        ERC721Infos[] memory data = new ERC721Infos[](length);
+
+        for (uint256 i = 0; i < length; i++) {
+            ERC721Token storage t = LibAppStorage.diamondStorage().erc721s[collections[i]];
+
+            data[i] = ERC721Infos(
+                collections[i],
+                t.name,
+                t.symbol,
+                t.description,
+                t.id,
+                t.maxSupply,
+                t.collectionRewardRate,
+                t.individualShare,
+                t.tokenPrice,
+                t.rewardToken,
+                t.checkpoints.length,
+                t.leftoverReward
+            );
+        }
+
+        return data;
+    }
+
+    function getCollectionInfos(address collectionAddress) internal view returns (ERC721Infos memory) {
+        ERC721Infos memory data;
+        ERC721Token storage t = LibAppStorage.diamondStorage().erc721s[collectionAddress];
+
+        data = ERC721Infos(
+            collectionAddress,
+            t.name,
+            t.symbol,
+            t.description,
+            t.id,
+            t.maxSupply,
+            t.collectionRewardRate,
+            t.individualShare,
+            t.tokenPrice,
+            t.rewardToken,
+            t.checkpoints.length,
+            t.leftoverReward
+        );
+
+        return data;
     }
 
     // function _onNFTTransfer(address token, address from, address to, uint256 tokenId) internal {

@@ -3,8 +3,7 @@ pragma solidity >=0.8.21;
 
 import { ERC721 } from "../facades/ERC721.sol";
 import { IERC721Facet } from "../interfaces/IERC721Facet.sol";
-import { ERC721Token } from "../shared/Structs.sol";
-import { ERC721Infos } from "../shared/Structs.sol";
+import { ERC721Token, ERC721Infos } from "../shared/Structs.sol";
 import { LibERC721 } from "../libs/LibERC721.sol";
 import { AccessControl } from "../shared/AccessControl.sol";
 import { ReentrancyGuard } from "../shared/ReentrancyGuard.sol";
@@ -116,16 +115,21 @@ contract ERC721Facet is IERC721Facet, AccessControl, ReentrancyGuard {
 // *		View Functions
 // #############################################################################################
 
-  // function erc721GetAllCollectionsInfos() external view returns (ERC721Infos[])
-  // {
+  function erc721GetAllCollectionsInfos() external view returns (ERC721Infos[] memory)
+  {
+    return LibERC721.getAllCollectionsInfos();
+  }
 
-  // }
+  function erc721GetCollectionInfos(address token) external view returns (ERC721Infos memory)
+  {
+    return LibERC721.getCollectionInfos(token);
 
-  // function erc721GetCollectionInfos(address token) external view returns (ERC721Infos)
-  // {
+  }
 
-  // }
-
+  function erc721GetAllCollections() external view returns (address[] memory)
+  {
+    return LibAppStorage.diamondStorage().erc721Collections;
+  }
   function erc721Name(address token) external view returns (string memory) {
     return LibAppStorage.diamondStorage().erc721s[token].name;
   }
@@ -182,5 +186,8 @@ contract ERC721Facet is IERC721Facet, AccessControl, ReentrancyGuard {
     return LibAppStorage.diamondStorage().erc721s[token].dividends[token];
   }
 
+  function erc721GetOCSAPrice(address token) external view returns (uint256 amount) {
+    return LibAppStorage.diamondStorage().erc721s[token].tokenPrice;
+  }
   
 }

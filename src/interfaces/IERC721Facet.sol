@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
-// import { ERC721Infos } from "../shared/Structs.sol";
+import { ERC721Infos } from "../shared/Structs.sol";
 
 /**
  * @dev ERC721 diamond facet interface.
@@ -43,15 +43,15 @@ interface IERC721Facet {
     address rewardToken
   ) external returns(address);
 
-  // /**
-  //   * @dev Returns all deployed nft contracts infos.
-  //   */
-  // function erc721GetAllCollectionsInfos() external view returns (ERC721Infos[]);
+  /**
+    * @dev Returns all deployed nft contracts infos.
+    */
+  function erc721GetAllCollectionsInfos() external view returns (ERC721Infos[] memory);
 
-  // /**
-  //   * @dev Returns specific nft contracts infos.
-  //   */
-  // function erc721GetCollectionInfos(address token) external view returns (ERC721Infos);
+  /**
+    * @dev Returns specific nft contracts infos.
+    */
+  function erc721GetCollectionInfos(address token) external view returns (ERC721Infos memory);
   
   /**
    * @dev Returns the name of the token.
@@ -153,6 +153,9 @@ interface IERC721Facet {
 
 
     function erc721GetAvailableDividends(address token) external view returns (uint256 amount);
+
+    function erc721GetOCSAPrice(address token) external view returns (uint256 amount);
+
 	// #############################################################################################
 	// *		Write Functions
 	// #############################################################################################

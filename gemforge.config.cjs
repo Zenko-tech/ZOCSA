@@ -83,8 +83,8 @@ module.exports = {
     // shell command to execute before deploy
     preDeploy: '',
     // shell command to execute after deploy
-    // postDeploy: 'scripts/verify.js',
-    postDeploy: '',
+    postDeploy: 'scripts/verify.js',
+    // postDeploy: '',
 
   },
   // Wallets to use for deployment

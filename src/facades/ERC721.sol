@@ -5,6 +5,7 @@ import { IERC721 } from "lib/openzeppelin-contracts/contracts/token/ERC721/IERC7
 import { IERC721Metadata } from "lib/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import { IERC721Facet } from "../interfaces/IERC721Facet.sol";
 import { MetaContext } from "../shared/MetaContext.sol";
+import { ERC721Infos } from "../shared/Structs.sol";
 
 /**
  * @dev Facade implementation of ERC721 token.
@@ -107,6 +108,14 @@ function tokenURI(uint256 tokenId) external view returns (string memory) {
     function getCollectionAvailableDividends() external view returns (uint256 amount) {
       return _parent.erc721GetAvailableDividends(address(this));
     }
+
+  /**
+    * @dev Returns specific nft contracts infos.
+    */
+  function erc721GetCollectionInfos() external view returns (ERC721Infos memory)
+  {
+      return _parent.erc721GetCollectionInfos(address(this));
+  }
 
     // #############################################################################################
     // *		Write Functions

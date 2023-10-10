@@ -14,14 +14,18 @@ struct ERC721Checkpoint {
 }
 
 struct ERC721Infos {
+  address collectionAddress;
   string name;
   string symbol;
   string description;
-  uint256 id;
+  uint256 totalSupply;
   uint256 maxSupply;
   uint256 collectionRewardRate;
   uint256 individualShare;
+  uint256 tokenPrice;
   address rewardToken;
+  uint256 actualCheckpointsIndex;
+  uint256 leftoverReward;
 }
 
 struct ERC721Token {
@@ -54,6 +58,7 @@ struct ERC721Token {
 
   // All rewards deposited by project admin
   ERC721Checkpoint[] checkpoints;
+  
   uint256 actualCheckpointsIndex;
   // User Claimed Bal
   // mapping(address => uint256) userLastRewardPerToken; // replace by last index ??
@@ -67,17 +72,17 @@ struct ERC721Token {
 }
 
 
-struct ERC20Token {
-  string name;
-  string symbol;
-  uint8 decimals;
-  mapping(address => uint256) balances;
-  mapping(address => mapping(address => uint256)) allowances;
-  uint256 totalSupply;
-}
+// struct ERC20Token {
+//   string name;
+//   string symbol;
+//   uint8 decimals;
+//   mapping(address => uint256) balances;
+//   mapping(address => mapping(address => uint256)) allowances;
+//   uint256 totalSupply;
+// }
 
-struct ERC20TokenConfig {
-  string name;
-  string symbol;
-  uint8 decimals;
-}
+// struct ERC20TokenConfig {
+//   string name;
+//   string symbol;
+//   uint8 decimals;
+// }

@@ -10,6 +10,7 @@ import "../src/facets/ERC721Facet.sol";
 import "../src/libs/LibERC721.sol";
 import "../src/shared/AccessControl.sol";
 import { LibString } from "../src/libs/LibString.sol";
+import { ERC721Infos } from "../src/shared/Structs.sol";
 
 contract ERC721Test is TestBaseContract {
 
@@ -184,6 +185,7 @@ contract ERC721Test is TestBaseContract {
 
   }
 
+
   function testUrisAreValid() public {
     uint256 maxSupply = 100; 
     _deployFacade(maxSupply);
@@ -197,6 +199,15 @@ contract ERC721Test is TestBaseContract {
         assertEq(token.tokenURI(i), expectedUri);
     }
 }
+
+  function testAllCollectionsInfos() public {
+    _deployFacade(100);
+    _deployFacade(100);
+    ERC721Infos[] memory datas = diamond.erc721GetAllCollectionsInfos();
+    assertEq(datas.length, 2, "Error lengths mismatch");
+    assertEq(datas[0].name, "Test Collection", "Invalid name");
+    assertEq(datas[1].name, "Test Collection", "Invalid name");
+  }
 
   function testUriShouldRevert() public {
     _deployFacade(100);
