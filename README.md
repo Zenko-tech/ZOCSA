@@ -1,6 +1,13 @@
 # Zenko Protocol
 Diamond Smart Contracts using [Gemforge](https://gemforge.xyz) with [Foundry](https://github.com/foundry-rs/foundry).
 
+![Contracts Structure](https://github.com/Zenko-tech/Contracts/blob/main/_docs/Contracts_Structure.png)
+
+![User Flow](https://github.com/Zenko-tech/Contracts/blob/main/_docs/User_Flow.png)
+
+![Financial Flow](https://github.com/Zenko-tech/Contracts/blob/main/_docs/Financial_Flow.png)
+
+
 Actual Testnet deployment : 
 - diamond : 0xc754Bb1D9070Ab27993b8b285eBF48dc9aa3CbC5
 - test Token : 0xB6B01AAfd3665b1b8296C99DCC1777C51F5c1763
