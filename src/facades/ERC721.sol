@@ -30,10 +30,19 @@ contract ERC721 is IERC721, IERC721Metadata, MetaContext {
   /*
     IERC721Metadata interface
   */
+
+    /**
+   * @dev Returns the name of the ERC721 token.
+   * @return The name of the token.
+   */
   function name() public view override returns (string memory) {
     return _parent.erc721Name(address(this));
   }
 
+  /**
+   * @dev Returns the symbol of the ERC721 token.
+   * @return The symbol of the token.
+   */
   function symbol() public view override returns (string memory) {
     return _parent.erc721Symbol(address(this));
   }
@@ -42,46 +51,71 @@ contract ERC721 is IERC721, IERC721Metadata, MetaContext {
   /*
     IERC721 interface
   */
+  /**
+   * @dev Returns the project description.
+   * @return The project description as a string.
+   */
+
   function description() public view returns (string memory) {
     return _parent.erc721Description(address(this));
   }
 
-    /**
-     * @dev Returns the number of tokens in ``owner``'s account.
-     */
+  /**
+   * @dev Returns the number of tokens (OCSA) in `owner`'s account.
+   * @param owner The address of the token owner.
+   * @return balance The balance of tokens owned by `owner`.
+   */
     function balanceOf(address owner) external view returns (uint256 balance) {
         return _parent.erc721BalanceOf(address(this), owner);
     }
 
-    /**
-     * @dev Returns the avalaible reward amount in ``owner``'s account.
-     */
+  /**
+   * @dev Returns the available reward amount in `owner`'s account available to withdraw.
+   * @param owner The address of the token owner.
+   * @return balance The available reward balance of `owner`.
+   */
     function rewardBalanceOf(address owner) external view returns (uint256 balance) {
         return _parent.erc721RewardBalanceOf(address(this), owner);
     }
 
+  /**
+   * @dev Returns the address of the token used for paying rewards.
+   * @return The address of the reward token.
+   */
     function rewardToken() external view returns (address) {
         return _parent.erc721RewardToken(address(this));
     }
-    /**
-     * @dev Returns the owner of the `tokenId` token.
-     *
-     * Requirements:
-     *
-     * - `tokenId` must exist.
-     */
+
+  /**
+   * @dev Returns the owner of the `tokenId` token.
+   * @param tokenId The ID of the token.
+   * @return owner The address of the token owner.
+   * @notice Requires that `tokenId` exists.
+   */
     function ownerOf(uint256 tokenId) external view returns (address owner) {
         return _parent.erc721OwnerOf(address(this), tokenId);
     }
 
+  /**
+   * @dev Returns the URI of this specific token from collection.
+   * @param tokenId The ID of the token.
+   * @return The URI of the token.
+   */
 function tokenURI(uint256 tokenId) external view returns (string memory) {
   return _parent.erc721TokenURI(address(this), tokenId);
 }
 
+  /**
+    * @dev Returns the actual minted OCSA supply.
+    * @return actual total minted OCSA.
+    */
   function totalSupply() external view returns (uint256) {
     return _parent.erc721TotalSupply(address(this));
   }
 
+  /**
+    * @dev Returns the max mintable supply of this collection.
+  */
   function maxSupply() external view returns (uint256) {
     return _parent.erc721MaxSupply(address(this));
   }
@@ -105,13 +139,17 @@ function tokenURI(uint256 tokenId) external view returns (string memory) {
         return _parent.erc721IsApprovedForAll(address(this), owner, operator);
     }
 
+    /**
+     * @dev Returns all the reward deposited on this collection available by users to withdraw.
+     */
     function getCollectionAvailableDividends() external view returns (uint256 amount) {
       return _parent.erc721GetAvailableDividends(address(this));
     }
 
   /**
-    * @dev Returns specific nft contracts infos.
-    */
+   * @dev Returns specific NFT collection information.
+   * @return Collection information as a struct.
+   */
   function erc721GetCollectionInfos() external view returns (ERC721Infos memory)
   {
       return _parent.erc721GetCollectionInfos(address(this));
@@ -217,5 +255,10 @@ function tokenURI(uint256 tokenId) external view returns (string memory) {
         _parent.erc721SetApprovalForAll(address(this), operator, approved);
     }
 
+  /**
+   * @dev Checks if a given interface is supported by this contract.
+   * @param interfaceId The interface identifier.
+   * @return `true` if the interface is supported, `false` otherwise.
+   */
     function supportsInterface(bytes4 interfaceId) external view returns (bool) {return true;}
 }

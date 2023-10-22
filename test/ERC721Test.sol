@@ -199,6 +199,12 @@ contract ERC721Test is TestBaseContract {
         assertEq(token.tokenURI(i), expectedUri);
     }
 }
+  function testUriShouldRevert() public {
+    _deployFacade(100);
+
+    vm.expectRevert("ERC721: invalid token ID");
+    token.tokenURI(101);
+  }
 
   function testAllCollectionsInfos() public {
     _deployFacade(100);
@@ -209,12 +215,6 @@ contract ERC721Test is TestBaseContract {
     assertEq(datas[1].name, "Test Collection", "Invalid name");
   }
 
-  function testUriShouldRevert() public {
-    _deployFacade(100);
-
-    vm.expectRevert("ERC721: invalid token ID");
-    token.tokenURI(101);
-  }
 
   function testSupplyDispatch() public {
     _deployFacade(100);

@@ -90,3 +90,15 @@ npx prettier --write --plugin=prettier-plugin-solidity 'src/**/*.sol'
 [X] restrict erc721WithdrawUserEarnings() to allowed facades for security reason
 [] ensure msg.sender / from-to on facade 
 [X] if destination is contract, ensure mint to and transfer to can handle transfer : _checkOnERC721Received()
+
+
+# TESTING : 
+[X] deploying OCSA facades with correct information / view functions (with URI too)
+[X ~ ] testing dispatch logic with simple parameters (Simple distrib?)
+[X] testing asymetric distrib
+[X] testing withdraw 
+[X] shouldnt be able to withdraw if no balance
+[X] shouldnt be able to withdraw from facet
+[X] admin shouldnt be able to mint when max supply reached
+[X] user shouldnt be able to mint from facet (only admin for regulation)
+[X] admin shouldnt be able to mint if receiver is contract without corresponding interface 
