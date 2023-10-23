@@ -30,8 +30,8 @@ abstract contract AccessControl is MetaContext {
     _;
   }
 
-  modifier onlyERC721Facades() {
-    if (LibAppStorage.diamondStorage().erc721ApprovedFacades[_msgSender()] != true) {
+  modifier onlyZOCSAFacades() {
+    if (LibAppStorage.diamondStorage().zOcsaApprovedFacades[_msgSender()] != true) {
       revert CallerMustBeAdminError();
     }
     _;

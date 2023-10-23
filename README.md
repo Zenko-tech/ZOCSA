@@ -81,19 +81,17 @@ npx prettier --write --plugin=prettier-plugin-solidity 'src/**/*.sol'
 
 ### TODO/ WIP :
     -- for later updates --
-[] Implementation de l'interface IERC721Receiver afin de pouvoir recevoir des nft avec safetransferfrom (update for market place)
+[] Implementation de l'interface IERC20Receiver afin de pouvoir recevoir des coins avec safetransferfrom (update for market place)
 [] Transfer / safeTransfer implemantation (update for market place)
 
-[] Determine base URI/mint URI in LibERC721.sol
-[] Check for ERC721 Metadata interface et implementation (ERC20.sol vs ERC721.sol)
-[] check for supportInterface() and double safeTransferFrom() implementation in ERC721 with eip2535
-[X] restrict erc721WithdrawUserEarnings() to allowed facades for security reason
+
+
 [] ensure msg.sender / from-to on facade 
-[X] if destination is contract, ensure mint to and transfer to can handle transfer : _checkOnERC721Received()
+[] if destination is contract, ensure mint to and transfer to can handle transfer : _checkOnERC20Received()
 
 
 # TESTING : 
-[X] deploying OCSA facades with correct information / view functions (with URI too)
+[X] deploying OCSA facades with correct information / view functions
 [X ~ ] testing dispatch logic with simple parameters (Simple distrib?)
 [X] testing asymetric distrib
 [X] testing withdraw 

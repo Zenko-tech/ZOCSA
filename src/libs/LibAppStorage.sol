@@ -8,19 +8,27 @@ struct AppStorage {
   uint256 reentrancyStatus;
   MetaTxContextStorage metaTxContext;
   /*
-    TODO: Customize storage variables here
+    OCSA Data Storage
+  */
 
+  // All deployed OCSAs Collection addresses
+  address[] zOcsaCollections;
+  // OCSA collection address => OCSA collection info
+  mapping(address => ZOCSAToken) zOcsas;
+  // register all OCSA contract for access rights
+  mapping(address => bool) zOcsaApprovedFacades;
+
+  // zenko wallet
+  address treasury;
+  // only admin wallet can mint to respect legal regulation 
+  address adminMinter;
+  // only plateforme to resell ocsa
+  address OCSAMarketplace;
+  /*
     NOTE: Once contracts have been deployed you cannot modify the existing entries here. You can only append 
     new entries. Otherwise, any subsequent upgrades you perform will break the memory structure of your 
     deployed contracts.
     */
-  // mapping(address => ERC20Token) erc20s;
-  
-  address[] erc721Collections;
-  mapping(address => ERC721Token) erc721s;
-  mapping(address => bool) erc721ApprovedFacades;
-  address treasury;
-  address adminMinter;
 }
 
 library LibAppStorage {

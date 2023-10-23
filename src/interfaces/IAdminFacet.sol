@@ -1,44 +1,50 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { ERC721Infos } from "../shared/Structs.sol";
+import { ZOCSATokenConfig } from "../shared/Structs.sol";
 
 /**
  * @dev ERC721 diamond facet interface.
  */
-interface IAdminFacet {
-
-	// #############################################################################################
-	// *		Events
-	// #############################################################################################
-
-    /**
-     * @dev Emitted when `owner` enables `approved` to manage the `tokenId` token.
-     */
-    // event ERC721Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
-
-
-	// #############################################################################################
-	// *		Write Functions
-	// #############################################################################################
-  
+interface IAdminFacet {  
+  /**
+   * @dev Sets the treasury address.
+   * @param treasury The address to set as the treasury.
+   */
   function setTreasuryAddress(address treasury) external;
-  
+
+  /**
+   * @dev Sets the address of the admin minter.
+   * @param newMinter The address to set as the admin minter.
+   */
+
   function setAdminMinterAddress(address newMinter) external;
 
+  /**
+   * @dev Sets the address for the OCSA Marketplace.
+   * @param OCSAMarketplace The address to set for the OCSA Marketplace.
+   */
+  function setOCSAMarketplaceAddress(address OCSAMarketplace) external;
 
-  function erc721Mint(address token, address to, uint256 count) external;
+  /**
+   * @dev Mints new ZOCSA tokens.
+   * @param token The token address for minting.
+   * @param to The address to mint tokens to.
+   * @param count The number of tokens to mint.
+   */
+  function ZOCSAMint(address token, address to, uint256 count) external;
   
+  /**
+   * @dev Updates the project description for a ZOCSA token.
+   * @param token The token address to update.
+   * @param newDescription The new description string.
+   */
+  function ZOCSAUpdateProjectDescription(address token, string memory newDescription) external;
 
-  function erc721UpdateProjectDescription(address token, string memory newDescription) external;
-  
-  function erc721UpdateCollectionBaseUri(address token, string memory newBaseUri) external;
-
-
-  function erc721DispatchUserReward(address token, uint256 amount) external;
-
-  // function erc721IncreaseMaxSupply(address token, uint256 supplyToAdd) external;
-  // function erc721UpdateProjectRewardRate(address token, uint256 newRate) external;
-
-
+  /**
+   * @dev Dispatches user rewards for a ZOCSA token.
+   * @param token The token address for which to dispatch rewards.
+   * @param amount The amount of rewards to dispatch.
+   */
+  function ZOCSADispatchUserReward(address token, uint256 amount) external;
 }
