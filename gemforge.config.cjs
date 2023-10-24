@@ -50,6 +50,7 @@ module.exports = {
       // imports to include in the generated IDiamondProxy interface
       imports: [
         "src/shared/Structs.sol",
+        "src/shared/POCSAStructs.sol",
       ],
     },
   },

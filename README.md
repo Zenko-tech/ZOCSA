@@ -89,6 +89,21 @@ npx prettier --write --plugin=prettier-plugin-solidity 'src/**/*.sol'
 [] ensure msg.sender / from-to on facade 
 [] if destination is contract, ensure mint to and transfer to can handle transfer : _checkOnERC20Received()
 
+/!\ potential bound ocsa / unbounded ? bound reverse a nouveau les gains sur TX d'activation ?
+- Transformation d'ocsa (bounded) a standard erc20 (unbounded)
+- potentiel ajout de whitelist sur la function BoundOcsa - permet d'assurer le KYC des user s'inscrivant comme share older (passe de erc20 a ocsa) 
+- evite la distribution des gains sur des wallets type exchange, et apporte des events sur les achats / reventes des users sur marche secondaire
+=> workflow : 
+ transfer - unbound ocsa if no alrdy unbounded in user balances -> sender send unbounded ocsa to recipient
+BoundOcsa : check if user has any unbounded ocsa, ifso bound them to update totalSupply 
+balanceOf - return bound ocsa + unbound ocsa 
+BalanceBounded : return bal of bounded ocsa
+BalanceUnBounded : return bal of unbounded ocsa
+
+## FEATURES POCSA
+- pour l'instant pas de transfert implement
+- Tous les versements des rewards se font bien mensuellement (et manuellement) de maniere fixe ?
+- Change Mint mecanism => POCSA doit mint obligatoirement les ocsa au wallet partenaire admins, qui peut deleguer la vente sur la marketPlace Zenko, ou bien vendre lui meme les tokens - BUT - hoooow si les transfert sont desactives ? 
 
 # TESTING : 
 [X] deploying OCSA facades with correct information / view functions

@@ -1,19 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-struct MetaTxContextStorage {
-  address trustedForwarder;
-}
-// OCSA Reward Checkpoint
-struct ZOCSACheckpoint {
+// pOCSA Reward Checkpoint
+struct POCSACheckpoint {
     uint256 timestamp;
     uint256 totalAmount;
     uint256 depositedAmount;
     uint256 rewardPerToken;
     uint256 totalSupplyAtTime;
 }
-// OCSA Collection display info
-struct ZOCSAInfos {
+// pOCSA Collection display info
+struct POCSAInfos {
   address collectionAddress;
   string name;
   string symbol;
@@ -27,8 +24,8 @@ struct ZOCSAInfos {
   uint256 actualCheckpointsIndex;
   uint256 leftoverReward;
 }
-// OCSA Token Collection Info
-struct ZOCSAToken {
+// pOCSA Token Collection Info
+struct POCSAToken {
   string name;
   string symbol;
   string description;
@@ -42,13 +39,13 @@ struct ZOCSAToken {
   uint256 collectionRewardRate;
   // collectionRewardRate / holders
   uint256 individualShare;
-  // ocsa buy price in wei
+  // pocsa buy price in wei
   uint256 tokenPrice;
   // Reward token address
   address rewardToken;
 
   // All rewards deposited by project admin
-  ZOCSACheckpoint[] checkpoints;
+  POCSACheckpoint[] checkpoints;
   
   uint256 actualCheckpointsIndex;
   // User last claimed checkpoint
@@ -61,8 +58,8 @@ struct ZOCSAToken {
   uint256 leftoverReward;
 }
 
-// OCSA Deployment Infos
-struct ZOCSATokenConfig {
+// pOCSA Deployment Infos
+struct POCSATokenConfig {
     string name;
     string symbol;
     string description;

@@ -2,6 +2,7 @@
 pragma solidity >=0.8.21;
 
 import "../shared/Structs.sol";
+import "../shared/POCSAStructs.sol";
 
 struct AppStorage {
   bool diamondInitialized;
@@ -17,6 +18,13 @@ struct AppStorage {
   mapping(address => ZOCSAToken) zOcsas;
   // register all OCSA contract for access rights
   mapping(address => bool) zOcsaApprovedFacades;
+
+  // All deployed Zenko partenairs OCSAs Collection addresses
+  address[] pOcsaCollections;
+  // OCSA collection address => POCSA collection info
+  mapping(address => POCSAToken) pOcsas;
+  // register all POCSA contract for access rights
+  mapping(address => bool) pOcsaApprovedFacades;
 
   // zenko wallet
   address treasury;

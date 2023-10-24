@@ -17,9 +17,13 @@ library LibZOCSA {
    */
   event ZOCSABurned(address token, address from, uint256 amount);
   /**
-   * @dev Emitted when a token is transferred.
+   * @dev Emitted when a token is transferred for sale to marketplace.
    */
-  event ZOCSATransferred(address token, address from, address to, uint256 value);
+  event ZOCSATransferredToMarketPlace(address token, address from, address marketPlace, uint256 value);
+    /**
+   * @dev Emitted when a token is sold from marketplace and send to buyer.
+   */
+  event ZOCSABuyFromMarketPlace(address token, address marketPlace, address from, address to, uint256 value);
   /**
    * @dev Emitted when a token is approved for a spender.
    */
@@ -80,8 +84,8 @@ library LibZOCSA {
     * @param amount The amount to transfer.
     */
   function transfer(address token, address from, address to, uint256 amount) internal {
-    revert("Not Implemented Yet");
 
+    revert("Not Implemented Yet");
     // ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
 
     // if (amount > t.balances[from]) {
@@ -91,7 +95,7 @@ library LibZOCSA {
     // t.balances[from] -= amount;
     // t.balances[to] += amount;
 
-    // emit ZOCSATransferred(token, from, to, amount);
+    // emit ZOCSATransferredToMarketPlace(token, from, to, amount);
   }
 
   /**
@@ -344,8 +348,10 @@ library LibZOCSA {
     */
   function _onAssetCountChange(address token, address user) internal {
     ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
-    if(t.balances[user] > 0)
+    if (user != LibAppStorage.diamondStorage().OCSAMarketplace && user != address(this))
     {
+      if(t.balances[user] > 0)
+      {
         uint256 totalDividend = 0;
         for (uint256 i = t.lastClaimedCheckpointIndex[user]; i < t.checkpoints.length; i++) {
             ZOCSACheckpoint memory checkpoint = t.checkpoints[i];
@@ -369,6 +375,7 @@ library LibZOCSA {
       {
           t.lastClaimedCheckpointIndex[user] = t.checkpoints.length;
       }
+    }
   }
 
   /**
@@ -379,11 +386,11 @@ library LibZOCSA {
     */
   function _onOCSATransfer(address token, address from, address to) internal {
       // This function can be called before an OCSA transfer to update rewards for both the sender and receiver
-      if(from != address(0))
+      if(from != address(0) && from != address(this))
       {
           _onAssetCountChange(token, from);
       }
-      if (to != address(0))
+      if (to != address(0) && to != address(this))
       {
           _onAssetCountChange(token, to);
       }
