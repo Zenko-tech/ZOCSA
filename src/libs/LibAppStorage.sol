@@ -19,12 +19,12 @@ struct AppStorage {
   // register all OCSA contract for access rights
   mapping(address => bool) zOcsaApprovedFacades;
 
-  // All deployed Zenko partenairs OCSAs Collection addresses
-  address[] pOcsaCollections;
-  // OCSA collection address => POCSA collection info
-  mapping(address => POCSAToken) pOcsas;
-  // register all POCSA contract for access rights
-  mapping(address => bool) pOcsaApprovedFacades;
+  // // All deployed Zenko partenairs OCSAs Collection addresses
+  // address[] pOcsaCollections;
+  // // OCSA collection address => POCSA collection info
+  // mapping(address => POCSAToken) pOcsas;
+  // // register all POCSA contract for access rights
+  // mapping(address => bool) pOcsaApprovedFacades;
 
   // zenko wallet
   address treasury;

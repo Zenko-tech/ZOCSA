@@ -155,11 +155,10 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
     t.collectionRewardRate = config.collectionRewardRate;
     t.tokenPrice = config.tokenPrice;
     t.rewardToken = config.rewardToken;
-    
+    uint256 _tokenIndividualShare = t.collectionRewardRate / t.maxSupply;
+    t.individualShare = _tokenIndividualShare;
     // TODO : For POCSA ?
     // LibZOCSA.mint(token, msg.sender, 100);
-
-    LibZOCSA._setIndividualShare(token);
     emit ZOCSANewToken(token);
     return token;
   }
@@ -173,6 +172,14 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
     uint256 amount
   ) external nonReentrant() onlyZOCSAFacades() {
     LibZOCSA.withdrawUserReward(msg.sender, from, to, amount);
+  }
+
+  /**
+   * @notice Bound OCSA to actual owner, which activate the income generating property of OCSA
+   * @param amount The amount of OCSA to bound to actual owner.
+  */
+  function ZOCSABoundOCSA(address user, uint256 amount) external {
+    LibZOCSA.boundUserOCSA(msg.sender, user, amount);
   }
 
   /*
@@ -227,11 +234,41 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
   }
 
   /**
+   * @dev Get the total Bounded OCSA Supply of this OCSA collection.
+   */
+  function ZOCSABoundedSupply() external view returns (uint256) {
+    return LibAppStorage.diamondStorage().zOcsas[msg.sender].totalBoundedOcsa;
+  }
+
+  /**
+   * @dev Get the total Unbounded OCSA Supply of this OCSA collection.
+   */
+  function ZOCSAUnboundedSupply() external view returns (uint256) {
+    return LibAppStorage.diamondStorage().zOcsas[msg.sender].totalUnboundedOcsa;
+  }
+
+  /**
    * @dev Returns the reward balance for this collection by this user (all ocsas earnings) 
    * @param owner The owner address.
    */
   function ZOCSARewardBalanceOf(address owner) external view returns (uint256) {
     return LibZOCSA.consultUserRewards(msg.sender, owner);
+  }
+
+  /**
+   * @dev Returns the bounded ocsa balance of this user 
+   * @param owner The owner address.
+   */
+  function ZOCSABoundedBalanceOf(address owner) external view returns (uint256) {
+    return LibAppStorage.diamondStorage().zOcsas[msg.sender].boundedOcsas[owner];
+  }
+
+  /**
+   * @dev Returns the unbounded ocsa balance of this user 
+   * @param owner The owner address.
+   */
+  function ZOCSAUnboundedBalanceOf(address owner) external view returns (uint256) {
+    return LibAppStorage.diamondStorage().zOcsas[msg.sender].unboundedOcsas[owner];
   }
 
   /**

@@ -99,6 +99,16 @@ interface IZOCSAFacet {
   function ZOCSAMaxSupply() external view returns (uint256);
 
   /**
+   * @dev Get the total Bounded OCSA Supply of this OCSA collection.
+   */
+  function ZOCSABoundedSupply() external view returns (uint256);
+
+  /**
+   * @dev Get the total Unbounded OCSA Supply of this OCSA collection.
+   */
+  function ZOCSAUnboundedSupply() external view returns (uint256);
+
+  /**
    * @dev Returns the reward balance for this collection by this user (all ocsas earnings) 
    * @param owner The owner address.
    */
@@ -108,7 +118,18 @@ interface IZOCSAFacet {
    * @dev Returns the address of the reward token paid by the protocol
    */
   function ZOCSARewardToken() external view returns (address);
-  
+
+  /**
+   * @dev Returns the bounded ocsa balance of this user 
+   * @param owner The owner address.
+   */
+  function ZOCSABoundedBalanceOf(address owner) external view returns (uint256);
+
+  /**
+   * @dev Returns the unbounded ocsa balance of this user 
+   * @param owner The owner address.
+   */
+  function ZOCSAUnboundedBalanceOf(address owner) external view returns (uint256);
   /**
    * @dev Returns the total dividend available to user in the collection
    */
@@ -123,5 +144,10 @@ interface IZOCSAFacet {
    * @dev Allow user to withdraw their earning 
    */
 	function ZOCSAWithdrawUserEarnings(address from, address to, uint256 amount) external;
-
+  
+  /**
+   * @notice Bound OCSA to actual owner, which activate the income generating property of OCSA
+   * @param amount The amount of OCSA to bound to actual owner.
+  */
+  function ZOCSABoundOCSA(address user, uint256 amount) external;
 }

@@ -148,6 +148,20 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
     return _parent.ZOCSAMaxSupply();
   }
 
+  /**
+   * @dev Get the total Bounded OCSA Supply of this OCSA collection.
+   */
+  function boundedSupply() external view returns (uint256) {
+    return _parent.ZOCSABoundedSupply();
+  }
+
+  /**
+   * @dev Get the total Unbounded OCSA Supply of this OCSA collection.
+   */
+  function unboundedSupply() external view returns (uint256) {
+    return _parent.ZOCSAUnboundedSupply();
+  }
+
 /**
   * @dev Returns the available reward amount in `owner`'s account available to withdraw.
   * @param owner The address of the token owner.
@@ -155,6 +169,22 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
   */
   function rewardBalanceOf(address owner) external view returns (uint256 balance) {
     return _parent.ZOCSARewardBalanceOf(owner);
+  }
+
+  /**
+   * @dev Returns the bounded ocsa balance of this user 
+   * @param owner The owner address.
+   */
+  function boundedBalanceOf(address owner) external view returns (uint256) {
+    return _parent.ZOCSABoundedBalanceOf(owner);
+  }
+
+  /**
+   * @dev Returns the unbounded ocsa balance of this user 
+   * @param owner The owner address.
+   */
+  function unboundedBalanceOf(address owner) external view returns (uint256) {
+    return _parent.ZOCSAUnboundedBalanceOf(owner);
   }
 
 /**
@@ -193,5 +223,13 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
   */
   function withdrawUserReward(address to, uint256 amount) external {
       _parent.ZOCSAWithdrawUserEarnings(_msgSender(), to, amount);
+  }
+
+  /**
+  * @notice Bound OCSA to actual owner, which activate the income generating property of OCSA
+  * @param amount The amount of OCSA to bound to actual owner.
+  */
+  function boundOCSA(uint256 amount) external {
+    _parent.ZOCSABoundOCSA(_msgSender(), amount);
   }
 }

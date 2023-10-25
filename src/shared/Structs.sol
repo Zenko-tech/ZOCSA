@@ -11,6 +11,8 @@ struct ZOCSACheckpoint {
     uint256 depositedAmount;
     uint256 rewardPerToken;
     uint256 totalSupplyAtTime;
+    uint256 boundedSupplyAtTime;
+    uint256 unboundedSupplyAtTime;
 }
 // OCSA Collection display info
 struct ZOCSAInfos {
@@ -20,6 +22,8 @@ struct ZOCSAInfos {
   string description;
   uint256 totalSupply;
   uint256 maxSupply;
+  uint256 totalUnboundedOcsa;
+  uint256 totalBoundedOcsa;
   uint256 collectionRewardRate;
   uint256 individualShare;
   uint256 tokenPrice;
@@ -35,7 +39,16 @@ struct ZOCSAToken {
   uint8 decimals;
   uint256 totalSupply;
   uint256 maxSupply;
-  mapping(address => uint256) balances;
+  // all ocsas not linked to an income receiver
+  uint256 totalUnboundedOcsa;
+  // all ocsas claimed as income receiver by their actual owner
+  uint256 totalBoundedOcsa;
+  // user address => all bounded + unbounded user's ocsas
+  mapping(address => uint256) balances; 
+  // user address => unbounded Ocsa balance
+  mapping(address => uint256) unboundedOcsas;
+  // user address => bounded Ocsa balance
+  mapping(address => uint256) boundedOcsas;
   mapping(address => mapping(address => uint256)) allowances;
 
   // Total shares of this collection
