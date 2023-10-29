@@ -4,6 +4,18 @@ pragma solidity >=0.8.21;
 struct MetaTxContextStorage {
   address trustedForwarder;
 }
+
+struct Whitelist {
+    // name of this whitelist
+    string name;
+    // all whitelist admins
+    address[] admins;
+    // all users whitelisted
+    address[] addresses;
+    // Add Zenko KYC/Legal contracts signature for POCSA
+    bool addZenkoWhiteList;
+}
+
 // OCSA Reward Checkpoint
 struct ZOCSACheckpoint {
     uint256 timestamp;
@@ -14,12 +26,14 @@ struct ZOCSACheckpoint {
     uint256 boundedSupplyAtTime;
     uint256 unboundedSupplyAtTime;
 }
+
 // OCSA Collection display info
 struct ZOCSAInfos {
   address collectionAddress;
   string name;
   string symbol;
   string description;
+  uint32 whitelistId;
   uint256 totalSupply;
   uint256 maxSupply;
   uint256 totalUnboundedOcsa;
@@ -28,9 +42,34 @@ struct ZOCSAInfos {
   uint256 individualShare;
   uint256 tokenPrice;
   address rewardToken;
+  address collectionTreasury;
   uint256 actualCheckpointsIndex;
   uint256 leftoverReward;
 }
+
+// OCSA Collection user display info
+struct ZOCSAUserInfo {
+  address collectionAddress;
+  string name;
+  string symbol;
+  string description;
+  uint256 whitelistStatus;
+  uint256 totalSupply;
+  uint256 maxSupply;
+  uint256 totalUnboundedOcsa;
+  uint256 totalBoundedOcsa;
+  uint256 collectionRewardRate;
+  uint256 individualShare;
+  uint256 tokenPrice;
+  address rewardToken;
+  uint256 lastClaimedCheckpointIndex;
+  uint256 balanceOfAvailableReward;
+  uint256 balanceOfOCSA;
+  uint256 balanceOfBoundedOCSA;
+  uint256 balanceOfUnboundedOCSA;
+  uint256 actualCheckpointsIndex;
+}
+
 // OCSA Token Collection Info
 struct ZOCSAToken {
   string name;
@@ -59,6 +98,8 @@ struct ZOCSAToken {
   uint256 tokenPrice;
   // Reward token address
   address rewardToken;
+  // Treasury Address of this collection
+  address collectionTreasury;
 
   // All rewards deposited by project admin
   ZOCSACheckpoint[] checkpoints;
@@ -83,4 +124,7 @@ struct ZOCSATokenConfig {
     uint256 collectionRewardRate;
     uint256 tokenPrice;
     address rewardToken;
+    address collectionTreasury;
+    address[] adminAddresses;
+    address[] whitelistAddresses;
 }

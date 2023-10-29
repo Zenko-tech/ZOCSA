@@ -49,8 +49,7 @@ module.exports = {
     proxyInterface: {
       // imports to include in the generated IDiamondProxy interface
       imports: [
-        "src/shared/Structs.sol",
-        "src/shared/POCSAStructs.sol",
+        "src/shared/Structs.sol"
       ],
     },
   },
@@ -168,7 +167,7 @@ module.exports = {
       // Wallet to use for deployment
       wallet: 'walletTest',
       // Initialization method arguments
-      initArgs: [process.env.ADMIN_MINTER, process.env.ADMIN_MINTER]
+      initArgs: [process.env.ADMIN_MINTER]
     }
   }
 }

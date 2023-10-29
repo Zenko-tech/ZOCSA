@@ -88,8 +88,7 @@ npx prettier --write --plugin=prettier-plugin-solidity 'src/**/*.sol'
 
 [] ensure msg.sender / from-to on facade 
 [] if destination is contract, ensure mint to and transfer to can handle transfer : _checkOnERC20Received()
-[] add UserOcsaInfo() retrieving user balances informations (bounded/unbounded/balOf)
-[] msg sender or address(this) between facet / facade ?
+[] Remove TempBalance System on assetCountChange (make sure _calculateDividend() do the job)
 
 ------------------------------------------------------
 [~] /!\ potential bound ocsa / unbounded ? bound reverse a nouveau les gains sur TX d'activation ?

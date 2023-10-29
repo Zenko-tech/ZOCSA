@@ -5,7 +5,7 @@ import { IERC20 } from "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.
 import { IERC20Metadata } from "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { IZOCSAFacet } from "../interfaces/IZOCSAFacet.sol";
 import { MetaContext } from "../shared/MetaContext.sol";
-import { ZOCSAInfos } from "../shared/Structs.sol";
+import { ZOCSAInfos, ZOCSAUserInfo } from "../shared/Structs.sol";
 
 /**
  * @dev Facade implementation of ERC20 token.
@@ -36,7 +36,7 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
    * @return Token name.
    */
   function name() public view override returns (string memory) {
-    return _parent.ZOCSAName();
+    return _parent.ZOCSAName(address(this));
   }
 
   /**
@@ -44,7 +44,7 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
    * @return Token symbol.
    */
   function symbol() public view override returns (string memory) {
-    return _parent.ZOCSASymbol();
+    return _parent.ZOCSASymbol(address(this));
   }  
 
   /**
@@ -52,7 +52,7 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
    * @return Token decimals.
    */
   function decimals() public view override returns (uint8) {
-    return _parent.ZOCSADecimals();
+    return _parent.ZOCSADecimals(address(this));
   }
 
   /*
@@ -65,7 +65,7 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
    * @return Total supply of tokens.
    */
   function totalSupply() public view override returns (uint256) {
-    return _parent.ZOCSATotalSupply();
+    return _parent.ZOCSATotalSupply(address(this));
   }
 
   /**
@@ -74,7 +74,7 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
    * @return balance The balance of tokens owned by `owner`.
    */
   function balanceOf(address account) public view override returns (uint256) {
-    return _parent.ZOCSABalanceOf(account);
+    return _parent.ZOCSABalanceOf(address(this), account);
   }
 
   /**
@@ -84,7 +84,7 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
    * @return Allowed amount.
    */
   function allowance(address owner, address spender) public view override returns (uint256) {
-    return _parent.ZOCSAAllowance(owner, spender);
+    return _parent.ZOCSAAllowance(address(this), owner, spender);
   }
 
   /*
@@ -93,13 +93,23 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
   */
 
   /**
+   * @dev Mints new ZOCSA tokens.
+   * @dev Only whitelisted user can receive Bounded OCSA after KYC / Legal Contract / Payment Received
+   * @param receiver The address to mint tokens to. (need to be whitelisted)
+   * @param amount The number of tokens to mint.
+   */
+  function mint(address receiver, uint256 amount) public {
+    _parent.ZOCSAMint(address(this), _msgSender(), receiver, amount);
+  }
+
+  /**
    * @notice Approves the spender to spend a certain amount of tokens.
    * @param spender The address to be approved.
    * @param amount The amount to approve.
    * @return True if operation is successful.
    */
   function approve(address spender, uint256 amount) public override returns (bool) {
-    _parent.ZOCSAApprove(_msgSender(), spender, amount);
+    _parent.ZOCSAApprove(address(this), _msgSender(), spender, amount);
     return true;
   }
 
@@ -111,7 +121,7 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
    */
   function transfer(address recipient, uint256 amount) public override returns (bool) {
     address caller = _msgSender();
-    _parent.ZOCSATransfer(caller, caller, recipient, amount);
+    _parent.ZOCSATransfer(address(this), caller, caller, recipient, amount);
     return true;
   }
 
@@ -123,7 +133,7 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
    * @return True if operation is successful.
    */
   function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
-    _parent.ZOCSATransfer(_msgSender(), sender, recipient, amount);
+    _parent.ZOCSATransfer(address(this), _msgSender(), sender, recipient, amount);
     return true;
   }
 
@@ -138,28 +148,28 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
    */
 
   function description() public view returns (string memory) {
-    return _parent.ZOCSADescription();
+    return _parent.ZOCSADescription(address(this));
   }
 
   /**
     * @dev Returns the max mintable supply of this collection.
   */
   function maxSupply() external view returns (uint256) {
-    return _parent.ZOCSAMaxSupply();
+    return _parent.ZOCSAMaxSupply(address(this));
   }
 
   /**
    * @dev Get the total Bounded OCSA Supply of this OCSA collection.
    */
   function boundedSupply() external view returns (uint256) {
-    return _parent.ZOCSABoundedSupply();
+    return _parent.ZOCSABoundedSupply(address(this));
   }
 
   /**
    * @dev Get the total Unbounded OCSA Supply of this OCSA collection.
    */
   function unboundedSupply() external view returns (uint256) {
-    return _parent.ZOCSAUnboundedSupply();
+    return _parent.ZOCSAUnboundedSupply(address(this));
   }
 
 /**
@@ -168,7 +178,7 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
   * @return balance The available reward balance of `owner`.
   */
   function rewardBalanceOf(address owner) external view returns (uint256 balance) {
-    return _parent.ZOCSARewardBalanceOf(owner);
+    return _parent.ZOCSARewardBalanceOf(address(this), owner);
   }
 
   /**
@@ -176,7 +186,7 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
    * @param owner The owner address.
    */
   function boundedBalanceOf(address owner) external view returns (uint256) {
-    return _parent.ZOCSABoundedBalanceOf(owner);
+    return _parent.ZOCSABoundedBalanceOf(address(this), owner);
   }
 
   /**
@@ -184,7 +194,7 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
    * @param owner The owner address.
    */
   function unboundedBalanceOf(address owner) external view returns (uint256) {
-    return _parent.ZOCSAUnboundedBalanceOf(owner);
+    return _parent.ZOCSAUnboundedBalanceOf(address(this), owner);
   }
 
 /**
@@ -192,14 +202,14 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
   * @return The address of the reward token.
   */
   function rewardToken() external view returns (address) {
-    return _parent.ZOCSARewardToken();
+    return _parent.ZOCSARewardToken(address(this));
   }
 
   /**
     * @dev Returns all the reward deposited on this collection available by users to withdraw.
     */
   function getCollectionAvailableDividends() external view returns (uint256 amount) {
-    return _parent.ZOCSAGetAvailableDividends();
+    return _parent.ZOCSAGetAvailableDividends(address(this));
   }
 
   /**
@@ -208,7 +218,17 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
    */
   function getCollectionInfos() external view returns (ZOCSAInfos memory)
   {
-      return _parent.ZOCSAGetCollectionInfos();
+      return _parent.ZOCSAGetCollectionInfos(address(this));
+  }
+
+  /**
+    * @dev Get information about a user's OCSA.
+    * @param user The address of the user to return data from.
+    * @return ZOCSAUserInfo Information about the specified ZOCSA collection user ocsa status.
+    */
+  function getUserInfo(address user) external view returns (ZOCSAUserInfo memory)
+  {
+      return _parent.ZOCSAGetUserInfo(address(this), user);
   }
 
   /*
@@ -222,7 +242,7 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
   * @param amount The amount of rewards to withdraw.
   */
   function withdrawUserReward(address to, uint256 amount) external {
-      _parent.ZOCSAWithdrawUserEarnings(_msgSender(), to, amount);
+      _parent.ZOCSAWithdrawUserEarnings(address(this), _msgSender(), to, amount);
   }
 
   /**
@@ -230,6 +250,22 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
   * @param amount The amount of OCSA to bound to actual owner.
   */
   function boundOCSA(uint256 amount) external {
-    _parent.ZOCSABoundOCSA(_msgSender(), amount);
+    _parent.ZOCSABoundOCSA(address(this), _msgSender(), amount);
+  }
+
+    /**
+   * @dev Updates the project description for a ZOCSA token.
+   * @param newDescription The new description string.
+   */
+  function updateProjectDescription(string memory newDescription) external {
+    _parent.ZOCSAUpdateProjectDescription(address(this), _msgSender(), newDescription);
+  }
+
+  /**
+   * @dev Dispatches user rewards for a ZOCSA token.
+   * @param amount The amount of rewards to dispatch.
+   */
+  function dispatchUserReward(uint256 amount) external {
+    _parent.ZOCSADispatchUserReward(address(this), _msgSender(), amount);
   }
 }

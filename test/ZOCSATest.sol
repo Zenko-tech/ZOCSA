@@ -11,15 +11,30 @@ import "../src/libs/LibZOCSA.sol";
 import "../src/shared/AccessControl.sol";
 import { LibString } from "../src/libs/LibString.sol";
 import { ZOCSAInfos, ZOCSATokenConfig } from "../src/shared/Structs.sol";
+import { ERC20TestContract } from "testing_contracts/ERC20TestContract.sol";
 
 contract ZOCSATest is TestBaseContract {
 
   uint256 rewardPerToken;
   ZOCSA token;
+  address[] emptyAddrArr = new address[](0);
+  ERC20TestContract public tERC20;
+
+/* -------------------------------------------------------------------------- */
+/*                                    Utils                                   */
+/* -------------------------------------------------------------------------- */
 
   function setUp() public virtual override {
     super.setUp();
-    // console2.log("super.setup() deployed ");
+    tERC20 = new ERC20TestContract(admin, 10000000e18);
+    tERC20.transfer(adminMinter, 6000e18); // use adminMinter to keep clean accounts balances to simplify testing 
+    // tERC20.transfer(account0, 1000e18);
+    // tERC20.transfer(account1, 1000e18);
+    // tERC20.transfer(account2, 1000e18);
+    // tERC20.transfer(account3, 1000e18);
+    vm.startPrank(adminMinter);
+    tERC20.approve(address(diamond), type(uint256).max);
+    vm.stopPrank();
   }
 
   function _getBal(uint256 amountInGwei, uint256 decimals) internal returns(uint256)
@@ -34,12 +49,29 @@ contract ZOCSATest is TestBaseContract {
       "Test Project Description", //description 
       _maxSupply, //maxSupply
       10, //collectionRewardRate
-      1, // tokenPrice 
-      address(testERC20) // rewardToken 
+      1 ether, // tokenPrice = 1e18
+      address(tERC20), // rewardToken
+      accountTreasury, // collection treasury address 
+      emptyAddrArr,
+      emptyAddrArr
     ))));
-    testERC20.approve(address(diamond), type(uint256).max);
+    // admin reward dispatcher Approve Diamond with max bal to ease testing 
+    tERC20.approve(address(diamond), type(uint256).max);
+    // whitelist 3 users simulating KYC / Bounded OCSA
+    address[] memory _whitelistAddresses = new address[](3);
+    _whitelistAddresses[0] = account0;
+    _whitelistAddresses[1] = account1;
+    _whitelistAddresses[2] = account2;
+    diamond.addAddressesToWhitelist(1, _whitelistAddresses);
   }
 
+  /* -------------------------------------------------------------------------- */
+  /*                         Test Deploy Diamond Facades                        */
+  /* -------------------------------------------------------------------------- */
+
+    // /!\/!\ TODO /!\/!\ 
+    // WIP : struc infos token
+    // /!\/!\ TODO /!\/!\ 
   function testDeployFacadeSucceeds() public {
     vm.recordLogs();
     diamond.ZOCSADeployToken(ZOCSATokenConfig(
@@ -49,7 +81,10 @@ contract ZOCSATest is TestBaseContract {
       5000, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(testERC20) // rewardToken 
+      address(tERC20), // rewardToken
+      accountTreasury, // collection treasury address 
+      emptyAddrArr,
+      emptyAddrArr
     ));
 
     Vm.Log[] memory entries = vm.getRecordedLogs();
@@ -69,7 +104,8 @@ contract ZOCSATest is TestBaseContract {
     (address t) = abi.decode(entries[0].data, (address));
 
     ZOCSA temp = ZOCSA(t);
-
+    ZOCSAInfos memory infos = temp.getCollectionInfos();
+    // console2.log("TEMP RETRIEVED IS : ", temp);
     assertEq(temp.name(), "Test Collection", "Invalid name");
     assertEq(temp.symbol(), "TEST", "Invalid symbol");
     assertEq(temp.description(), "Test Project Description", "Invalid description");
@@ -93,7 +129,10 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(testERC20) // rewardToken 
+      address(tERC20), // rewardToken
+      accountTreasury, // collection treasury address 
+      emptyAddrArr,
+      emptyAddrArr
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -104,7 +143,10 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(testERC20) // rewardToken 
+      address(tERC20), // rewardToken
+      accountTreasury, // collection treasury address 
+      emptyAddrArr,
+      emptyAddrArr    
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -115,7 +157,10 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(testERC20) // rewardToken 
+      address(tERC20), // rewardToken
+      accountTreasury, // collection treasury address 
+      emptyAddrArr,
+      emptyAddrArr
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -126,7 +171,10 @@ contract ZOCSATest is TestBaseContract {
       0, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(testERC20) // rewardToken 
+      address(tERC20), // rewardToken
+      accountTreasury, // collection treasury address 
+      emptyAddrArr,
+      emptyAddrArr
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -137,7 +185,10 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       0, //collectionRewardRate
       1, // tokenPrice 
-      address(testERC20) // rewardToken 
+      address(tERC20), // rewardToken
+      accountTreasury, // collection treasury address 
+      emptyAddrArr,
+      emptyAddrArr
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -148,7 +199,10 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       0, // tokenPrice 
-      address(testERC20) // rewardToken 
+      address(tERC20), // rewardToken
+      accountTreasury, // collection treasury address 
+      emptyAddrArr,
+      emptyAddrArr
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -159,11 +213,30 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(0) // rewardToken 
+      address(0), // rewardToken
+      accountTreasury, // collection treasury address 
+      emptyAddrArr,
+      emptyAddrArr
+    ));
+
+    vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
+    diamond.ZOCSADeployToken(ZOCSATokenConfig(      
+      "Test Collection", // name
+      "TEST", // symbol
+      "Test Project Description", //description 
+      100, //maxSupply
+      10, //collectionRewardRate
+      1, // tokenPrice 
+      address(tERC20), // rewardToken
+      address(0), // collection treasury address 
+      emptyAddrArr,
+      emptyAddrArr
     ));
 
   }
-
+/* -------------------------------------------------------------------------- */
+/*                      Test OCSA Collection Information                      */
+/* -------------------------------------------------------------------------- */
   function testAllCollectionsInfos() public {
     _deployFacade(100);
     _deployFacade(100);
@@ -173,184 +246,140 @@ contract ZOCSATest is TestBaseContract {
     assertEq(datas[1].name, "Test Collection", "Invalid name");
   }
 
+  // TODO : test get collection Info
+  // TODO : test get user ocsa info 
 
-  function testSupplyDispatch() public {
+/* -------------------------------------------------------------------------- */
+/*                               Test OCSA Mint                               */
+/* -------------------------------------------------------------------------- */
+  // TODO : test whitelisted user mint for himself
+
+  function testShouldntBeAbleToMintMaxSupply() public {
+    _deployFacade(5000);
+
+    vm.startPrank(adminMinter);
+    token.mint(account0, 5000);
+    
+    assertEq(token.balanceOf(account0), 5000, "invalid asset balance");
+    vm.expectRevert(bytes("ZOCSA: Cannot mint new OCSA, max supply reached"));
+    token.mint(account1, 1);
+    vm.stopPrank();
+  }
+
+  function testShouldntBeAbleToMintNotEnoughFundsorAllowance() public {
+    _deployFacade(100);
+    
+    vm.startPrank(account0);
+    // vm.expectRevert(abi.encodePacked(CallerMustBeAdminError.selector));
+    // vm.expectRevert(CallerMustBeAdminError.selector);
+    vm.expectRevert(bytes("ERC20: insufficient allowance"));
+    token.mint(account0, 1);
+
+    tERC20.approve(address(diamond), type(uint256).max);
+    vm.expectRevert(bytes("ERC20: transfer amount exceeds balance"));
+    token.mint(account0, 1);
+    vm.stopPrank();
+  }
+
+  function testShouldntBeAbleToMintRecipientNotWhiteListed() public {
+    _deployFacade(100);
+    
+    vm.startPrank(adminMinter);
+    vm.expectRevert(bytes("ZOCSA: Recipient not whitelisted !"));
+    token.mint(account3, 1);
+    vm.stopPrank();
+  }
+
+  // function testShouldntBeAbleToMintContractNonReceiver() public {
+  //   _deployFacade(100);
+    
+  //   vm.startPrank(adminMinter);
+  //   // vm.expectRevert(abi.encodePacked(CallerMustBeAdminError.selector));
+  //   vm.expectRevert(bytes("ZOCSA: transfer to non ZOCSAReceiver implementer"));
+  //   token.mint(address(tERC20), 1);
+  //   vm.stopPrank();
+
+  // }
+
+/* -------------------------------------------------------------------------- */
+/*                       Test OCSA Admin Dispatch Reward                      */
+/* -------------------------------------------------------------------------- */
+  function testDispatchRewards() public {
     _deployFacade(100);
     
     // first test with 70 max supply : only proportionnal amount should be withdrawn from admin
     vm.startPrank(adminMinter);
-    diamond.ZOCSAMint(address(token), account0, 40);
-    diamond.ZOCSAMint(address(token), account1, 20);
-    diamond.ZOCSAMint(address(token), account2, 10);
+    token.mint(account0, 40);
+    token.mint(account1, 20);
+    token.mint(account2, 10);
     vm.stopPrank();
-
-    uint256 balBefore = testERC20.balanceOf(admin);
-    diamond.ZOCSADispatchUserReward(address(token), 100e18);
-    uint256 balAfter = testERC20.balanceOf(admin);
-
+    uint256 balBefore = tERC20.balanceOf(admin);
+    token.dispatchUserReward(100e18);
+    uint256 balAfter = tERC20.balanceOf(admin);
     rewardPerToken = 100e18 / 100;
     // console2.log(balBefore, balAfter);
     assertEq(balAfter, balBefore - (rewardPerToken * 70), "Invalid Admin Balance");
-
+    assertEq(token.rewardBalanceOf(account0), 40e18, "Invalid Reward balance");
+    assertEq(token.rewardBalanceOf(account1), 20e18, "Invalid Reward balance");
+    assertEq(token.rewardBalanceOf(account2), 10e18, "Invalid Reward balance");
+    assertEq(token.rewardBalanceOf(account3), 0, "Invalid Reward balance");
 
     // test with full supply : full amount withdraw + stored remainder
     vm.startPrank(adminMinter);
-    diamond.ZOCSAMint(address(token), account2, 30);
+    token.mint(account2, 30);
     vm.stopPrank();
-
-    balBefore = testERC20.balanceOf(admin);
-    diamond.ZOCSADispatchUserReward(address(token), 100e18);
-    balAfter = testERC20.balanceOf(admin);
-
+    balBefore = tERC20.balanceOf(admin);
+    token.dispatchUserReward(100e18);
+    balAfter = tERC20.balanceOf(admin);
     // console2.log(balBefore, balAfter);
     assertEq(balAfter, balBefore - 100e18, "Invalid Admin Balance");
-  }
-  
-  function testSimpleDistrib() public {
-    _deployFacade(100);
-    // console2.log("account 0 is :", account0, testERC20.balanceOf(account0));
-    // console2.log("account 1 is :", account1, testERC20.balanceOf(account1));
-    // console2.log("account 2 is :", account2, testERC20.balanceOf(account2));
+    assertEq(token.rewardBalanceOf(account0), 80e18, "Invalid Reward balance");
+    assertEq(token.rewardBalanceOf(account1), 40e18, "Invalid Reward balance");
+    assertEq(token.rewardBalanceOf(account2), 50e18, "Invalid Reward balance");
+    assertEq(token.rewardBalanceOf(account3), 0, "Invalid Reward balance");
 
-    vm.startPrank(adminMinter);
-    diamond.ZOCSAMint(address(token), account0, 1);
-    diamond.ZOCSAMint(address(token), account1, 1);
-    diamond.ZOCSAMint(address(token), account2, 1);
+    // test with full supply minted but unbounded (not supposed to dispatch reward)
+    vm.startPrank(account0);
+    token.transfer(account3, 40);
     vm.stopPrank();
-
-    diamond.ZOCSADispatchUserReward(address(token), 100e18);
-    rewardPerToken = 100e18 / 100;
-
-    assertEq(token.balanceOf(account0), 1, "Invalid balance");
-    assertEq(token.balanceOf(account1), 1, "Invalid balance");
-    assertEq(token.balanceOf(account2), 1, "Invalid balance");
-    assertEq(token.totalSupply(), 3, "Invalid total supply");
-    assertNotEq(token.rewardBalanceOf(account0), 0, "Reward Balance shouldnt be empty !");
-    assertEq(token.rewardBalanceOf(account0), token.rewardBalanceOf(account1), "Invalid Reward balance");
-    assertEq(token.rewardBalanceOf(account0), token.rewardBalanceOf(account2), "Invalid Reward balance");
-
-    // console2.log("Final Rewards Balances : ", 
-    //   token.rewardBalanceOf(account0), 
-    //   token.rewardBalanceOf(account1), 
-    //   token.rewardBalanceOf(account2) 
-    // );
-
-    // console2.log("Protocol Balance : ", 
-    //   testERC20.balanceOf(accountTreasury)
-
-    // );
-  }
-
-  function testAsymetricDistrib() public {
-    _deployFacade(100);
-
-    vm.startPrank(adminMinter);
-    diamond.ZOCSAMint(address(token), account0, 1);
-    diamond.ZOCSAMint(address(token), account0, 1);
-
-    diamond.ZOCSAMint(address(token), account1, 1);
-    diamond.ZOCSAMint(address(token), account2, 1);
+    vm.startPrank(account1);
+    token.transfer(account3, 20);
     vm.stopPrank();
-
-    diamond.ZOCSADispatchUserReward(address(token), 100e18);
-    rewardPerToken = 100e18 / 100;
-
-    assertEq(token.balanceOf(account0), 2, "Invalid balance");
-    assertEq(token.balanceOf(account1), 1, "Invalid balance");
-    assertEq(token.balanceOf(account2), 1, "Invalid balance");
-    assertEq(token.totalSupply(), 4, "Invalid total supply");
-    assertNotEq(token.rewardBalanceOf(account0), 0, "Reward Balance shouldnt be empty !");
-    assertEq(token.rewardBalanceOf(account0), (token.rewardBalanceOf(account1) + token.rewardBalanceOf(account2)), "Invalid Reward balance");
-    assertEq(token.rewardBalanceOf(account1), token.rewardBalanceOf(account2), "Invalid Reward balance");
-
-    // console2.log("Final Rewards Balances : ", 
-    //   token.rewardBalanceOf(account0), 
-    //   token.rewardBalanceOf(account1), 
-    //   token.rewardBalanceOf(account2) 
-    // );
-
-    // console2.log("Protocol Balance : ", 
-    //   testERC20.balanceOf(accountTreasury)
-
-    // );
+    vm.startPrank(account2);
+    token.transfer(account3, 40);
+    vm.stopPrank();
+    balBefore = tERC20.balanceOf(admin);
+    token.dispatchUserReward(100e18);
+    balAfter = tERC20.balanceOf(admin);
+    // console2.log(balBefore, balAfter);
+    assertEq(balAfter, balBefore, "Invalid Admin Balance");
+    assertEq(token.rewardBalanceOf(account0), 80e18, "Invalid Reward balance");
+    assertEq(token.rewardBalanceOf(account1), 40e18, "Invalid Reward balance");
+    assertEq(token.rewardBalanceOf(account2), 50e18, "Invalid Reward balance");
+    assertEq(token.rewardBalanceOf(account3), 0, "Invalid Reward balance");
+    assertEq(token.totalSupply(), 100, "Invalid total supply");
+    assertEq(token.boundedSupply(), 0, "Invalid total bounded supply");
+    assertEq(token.unboundedSupply(), 100, "Invalid total unbounded supply");
+    assertEq(token.balanceOf(account0), 0, "Invalid user balance");
+    assertEq(token.balanceOf(account1), 0, "Invalid user balance");
+    assertEq(token.balanceOf(account2), 0, "Invalid user balance");
+    assertEq(token.balanceOf(account3), 100, "Invalid user balance");
+    assertEq(token.boundedBalanceOf(account0), 0, "Invalid user bounded balance");
+    assertEq(token.boundedBalanceOf(account1), 0, "Invalid user bounded balance");
+    assertEq(token.boundedBalanceOf(account2), 0, "Invalid user bounded balance");
+    assertEq(token.boundedBalanceOf(account3), 0, "Invalid user bounded balance");
+    assertEq(token.unboundedBalanceOf(account0), 0, "Invalid user unbounded balance");
+    assertEq(token.unboundedBalanceOf(account1), 0, "Invalid user unbounded balance");
+    assertEq(token.unboundedBalanceOf(account2), 0, "Invalid user unbounded balance");
+    assertEq(token.unboundedBalanceOf(account3), 100, "Invalid user unbounded balance");
   }
 
+  /* -------------------------------------------------------------------------- */
+  /*                       Test OCSA User Reward Withdraw                       */
+  /* -------------------------------------------------------------------------- */
 
-  /* Scenario : 
-  Token with 100 max supply
-  - user 0 mint 1 ocsa
-  - user 1 mint 1 ocsa
-  - user 2 mint 1 ocsa
-  Admin dispath 100usdc reward
-  - user 0 mint + 1 ocsa (2)
-  Admin dispath 100usdc reward
-  - user 0 should have 3 usdc available
-  - user 1 should have 2 usdc available
-  - user 2 should have 2 usdc available
-  Admin dispath 100usdc reward
-  - user 0 should have 5 usdc available
-  - user 1 should have 3 usdc available
-  - user 2 should have 3 usdc available
-  */
-  function testDeepAsymetricDistrib() public {
-    _deployFacade(100);
-
-    vm.startPrank(adminMinter);
-    diamond.ZOCSAMint(address(token), account0, 1);
-    diamond.ZOCSAMint(address(token), account1, 1);
-    diamond.ZOCSAMint(address(token), account2, 1);
-    vm.stopPrank();
-
-    diamond.ZOCSADispatchUserReward(address(token), 100e18);
-    rewardPerToken = 100e18 / 100;
-    assertNotEq(token.rewardBalanceOf(account0), 0, "Reward Balance shouldnt be empty !");
-    assertEq(token.rewardBalanceOf(account0), token.rewardBalanceOf(account1), "Invalid Reward balance");
-    assertEq(token.rewardBalanceOf(account0), token.rewardBalanceOf(account2), "Invalid Reward balance");
-
-    // console2.log("1 Rewards Balances : ", 
-    //   token.rewardBalanceOf(account0), 
-    //   token.rewardBalanceOf(account1), 
-    //   token.rewardBalanceOf(account2) 
-    // );
-
-    vm.startPrank(adminMinter);
-    diamond.ZOCSAMint(address(token), account0, 1);
-    vm.stopPrank();
-    // console2.log("2 Rewards Balances : ", 
-    //   token.rewardBalanceOf(account0), 
-    //   token.rewardBalanceOf(account1), 
-    //   token.rewardBalanceOf(account2) 
-    // );
-
-    diamond.ZOCSADispatchUserReward(address(token), 100e18);
-
-    assertEq(token.balanceOf(account0), 2, "Invalid balance");
-    assertEq(token.balanceOf(account1), 1, "Invalid balance");
-    assertEq(token.balanceOf(account2), 1, "Invalid balance");
-    assertEq(token.totalSupply(), 4, "Invalid total supply");
-    assertNotEq(token.rewardBalanceOf(account0), 0, "Reward Balance shouldnt be empty !");
-    assertEq(token.rewardBalanceOf(account0), (token.rewardBalanceOf(account1) + (token.rewardBalanceOf(account2) / 2)), "Invalid Reward balance");
-    assertEq(token.rewardBalanceOf(account1), token.rewardBalanceOf(account2), "Invalid Reward balance");
-
-    diamond.ZOCSADispatchUserReward(address(token), 100e18);
-
-    // console2.log("Final last Rewards Balances : ", 
-    //   _getBal(token.rewardBalanceOf(account0), 18), 
-    //   _getBal(token.rewardBalanceOf(account1), 18), 
-    //   _getBal(token.rewardBalanceOf(account2), 18) 
-    // );
-
-    // console2.log("Protocol Balance : ", 
-    //   testERC20.balanceOf(accountTreasury)
-
-    // );
-    //0x76006C4471fb6aDd17728e9c9c8B67d5AF06cDA0
-    //76006c4471fb6add17728e9c9c8b67d5af06cda0
-
-  }
-
-  function testSimpleWithdraw() public {
-    testDeepAsymetricDistrib();
+  function testWithdraw() public {
+    testDispatchRewards();
 
     vm.startPrank(account0);
     token.withdrawUserReward(account0, token.rewardBalanceOf(account0));
@@ -362,33 +391,24 @@ contract ZOCSATest is TestBaseContract {
     token.withdrawUserReward(account2, token.rewardBalanceOf(account2));
     vm.stopPrank();
 
-
-    // console2.log("testerc20 bals : ", 
-    //   testERC20.balanceOf(account0),
-    //   testERC20.balanceOf(account1),
-    //   testERC20.balanceOf(account2)
-    // );
-
-    // console2.log("reward bals : ", 
-    //   token.rewardBalanceOf(account0),
-    //   token.rewardBalanceOf(account1),
-    //   token.rewardBalanceOf(account2)
-    // );
+    assertEq(tERC20.balanceOf(account0), 80e18, "Invalid user reward balance");
+    assertEq(tERC20.balanceOf(account1), 40e18, "Invalid user reward balance");
+    assertEq(tERC20.balanceOf(account2), 50e18, "Invalid user reward balance");
   }
 
   function testShouldntBeAbleToWithdrawNoShares() public {
     _deployFacade(100);
 
     vm.startPrank(adminMinter);
-    diamond.ZOCSAMint(address(token), account0, 1);
+    token.mint(account0, 1);
     vm.stopPrank();
 
-    diamond.ZOCSADispatchUserReward(address(token), 100e18);
+    token.dispatchUserReward(100e18);
 
-    assertEq(testERC20.balanceOf(account0), 0, "Reward balance should be empty");
+    assertEq(tERC20.balanceOf(account0), 0, "Reward balance should be empty");
     assertEq(_getBal(token.rewardBalanceOf(account0), 18), 1, "Avalaible reward balance should be 1");
 
-    assertEq(testERC20.balanceOf(account1), 0, "Reward balance should be empty");
+    assertEq(tERC20.balanceOf(account1), 0, "Reward balance should be empty");
     assertEq(_getBal(token.rewardBalanceOf(account1), 18), 0, "Avalaible reward balance should be 1");
 
     vm.startPrank(account1);
@@ -396,7 +416,7 @@ contract ZOCSATest is TestBaseContract {
     token.withdrawUserReward(account1, 1);
     vm.stopPrank();
 
-    assertEq(testERC20.balanceOf(account1), 0, "Reward balance should be empty");
+    assertEq(tERC20.balanceOf(account1), 0, "Reward balance should be empty");
     assertEq(_getBal(token.rewardBalanceOf(account1), 18), 0, "Avalaible reward balance should be 1");
 
   }
@@ -405,54 +425,20 @@ contract ZOCSATest is TestBaseContract {
     _deployFacade(100);
 
     vm.startPrank(adminMinter);
-    diamond.ZOCSAMint(address(token), account0, 1);
+    token.mint(account0, 1);
     vm.stopPrank();
 
-    diamond.ZOCSADispatchUserReward(address(token), 100e18);
+    token.dispatchUserReward(100e18);
 
-    assertEq(testERC20.balanceOf(account0), 0, "Reward balance should be empty");
+    assertEq(tERC20.balanceOf(account0), 0, "Reward balance should be empty");
     assertEq(_getBal(token.rewardBalanceOf(account0), 18), 1, "Avalaible reward balance should be 1");
 
     vm.startPrank(account0);
     vm.expectRevert(CallerMustBeAdminError.selector);
-    diamond.ZOCSAWithdrawUserEarnings(account0, account1, 1);
+    diamond.ZOCSAWithdrawUserEarnings(address(token), account0, account1, 1);
     vm.stopPrank();
 
-    assertEq(testERC20.balanceOf(account0), 0, "Reward balance should be empty");
+    assertEq(tERC20.balanceOf(account0), 0, "Reward balance should be empty");
     assertEq(_getBal(token.rewardBalanceOf(account0), 18), 1, "Avalaible reward balance should be 1");
   }
-
-  function testShouldntBeAbleToMintMaxSupply() public {
-    _deployFacade(5000);
-
-    vm.startPrank(adminMinter);
-    diamond.ZOCSAMint(address(token), account0, 5000);
-    
-    assertEq(token.balanceOf(account0), 5000, "invalid asset balance");
-    vm.expectRevert(bytes("ZOCSA: Cannot mint new OCSA, max supply reached"));
-    diamond.ZOCSAMint(address(token), account1, 1);
-    vm.stopPrank();
-  }
-
-    function testShouldntBeAbleToMintNonAdmin() public {
-    _deployFacade(100);
-    
-    vm.startPrank(account0);
-    // vm.expectRevert(abi.encodePacked(CallerMustBeAdminError.selector));
-    vm.expectRevert(CallerMustBeAdminError.selector);
-    diamond.ZOCSAMint(address(token), account0, 1);
-    vm.stopPrank();
-
-  }
-
-  // function testShouldntBeAbleToMintContractNonReceiver() public {
-  //   _deployFacade(100);
-    
-  //   vm.startPrank(adminMinter);
-  //   // vm.expectRevert(abi.encodePacked(CallerMustBeAdminError.selector));
-  //   vm.expectRevert(bytes("ZOCSA: transfer to non ZOCSAReceiver implementer"));
-  //   diamond.ZOCSAMint(address(token), address(testERC20), 1);
-  //   vm.stopPrank();
-
-  // }
 }

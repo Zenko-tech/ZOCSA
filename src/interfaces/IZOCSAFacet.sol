@@ -11,35 +11,45 @@ interface IZOCSAFacet {
   /**
    * @dev Returns the name of the token.
    */
-  function ZOCSAName() external view returns (string memory);
+  function ZOCSAName(address token) external view returns (string memory);
 
   /**
    * @dev Returns the symbol of the token.
    */
-  function ZOCSASymbol() external view returns (string memory);
+  function ZOCSASymbol(address token) external view returns (string memory);
 
   /**
    * @dev Returns the decimals places of the token.
    */
-  function ZOCSADecimals() external view returns (uint8);
+  function ZOCSADecimals(address token) external view returns (uint8);
 
   /**
    * @dev Get the total supply.
    */
-  function ZOCSATotalSupply() external view returns (uint256);
+  function ZOCSATotalSupply(address token) external view returns (uint256);
 
   /**
    * @dev Get the balance of the given wallet.
    * @param account The account address.
    */
-  function ZOCSABalanceOf(address account) external view returns (uint256);
+  function ZOCSABalanceOf(address token, address account) external view returns (uint256);
 
   /**
    * @dev Get the allowance of the given spender for the given owner wallet.
    * @param account The account address.
    * @param spender The spender address.
    */
-  function ZOCSAAllowance(address account, address spender) external view returns (uint256);
+  function ZOCSAAllowance(address token, address account, address spender) external view returns (uint256);
+
+  /**
+   * @dev Mints new ZOCSA tokens.
+   * @dev Only whitelisted user can receive Bounded OCSA after KYC / Legal Contract / Payment Received
+   * @param token The token address for minting.
+   * @param from The address to mint tokens from.
+   * @param to The address to mint tokens to. (need to be whitelisted)
+   * @param count The number of tokens to mint.
+   */
+  function ZOCSAMint(address token, address from, address to, uint256 count) external;
 
   /**
    * @dev Approve an allowance for the given spender for the given owner wallet.
@@ -47,7 +57,7 @@ interface IZOCSAFacet {
    * @param spender The spender address.
    * @param amount The amount to approve.
    */
-  function ZOCSAApprove(address account, address spender, uint256 amount) external;
+  function ZOCSAApprove(address token, address account, address spender, uint256 amount) external;
 
   /**
    * @dev Transfer a token.
@@ -56,7 +66,7 @@ interface IZOCSAFacet {
    * @param to The to address.
    * @param amount The amount to transfer.
    */
-  function ZOCSATransfer(address caller, address from, address to, uint256 amount) external;
+  function ZOCSATransfer(address token, address caller, address from, address to, uint256 amount) external;
 
   /*
     OCSA implementation
@@ -76,7 +86,7 @@ interface IZOCSAFacet {
   /**
     * @dev Returns specific ocsa contracts infos.
     */
-  function ZOCSAGetCollectionInfos() external view returns (ZOCSAInfos memory);
+  function ZOCSAGetCollectionInfos(address token) external view returns (ZOCSAInfos memory);
 
   /**
     * @dev Returns all OCSAs collections deployed.
@@ -84,70 +94,93 @@ interface IZOCSAFacet {
   function ZOCSAGetAllCollections() external view returns (address[] memory);
 
   /**
+    * @dev Get information about a user's OCSA.
+    * @param user The address of the user to return data from.
+    * @return ZOCSAUserInfo Information about the specified ZOCSA collection user ocsa status.
+    */
+  function ZOCSAGetUserInfo(address token, address user) external view returns (ZOCSAUserInfo memory);
+
+  /**
    * @dev Returns the project description of the token.
    */
-  function ZOCSADescription() external view returns (string memory);
+  function ZOCSADescription(address token) external view returns (string memory);
 
   /**
    * @dev Get this collection project reward rate.
    */
-  function ZOCSACollectionRewardRate() external view returns (uint256);
+  function ZOCSACollectionRewardRate(address token) external view returns (uint256);
 
   /**
    * @dev Get the max supply of this OCSA collection.
    */
-  function ZOCSAMaxSupply() external view returns (uint256);
+  function ZOCSAMaxSupply(address token) external view returns (uint256);
 
   /**
    * @dev Get the total Bounded OCSA Supply of this OCSA collection.
    */
-  function ZOCSABoundedSupply() external view returns (uint256);
+  function ZOCSABoundedSupply(address token) external view returns (uint256);
 
   /**
    * @dev Get the total Unbounded OCSA Supply of this OCSA collection.
    */
-  function ZOCSAUnboundedSupply() external view returns (uint256);
+  function ZOCSAUnboundedSupply(address token) external view returns (uint256);
 
   /**
    * @dev Returns the reward balance for this collection by this user (all ocsas earnings) 
    * @param owner The owner address.
    */
-  function ZOCSARewardBalanceOf(address owner) external view returns (uint256);
+  function ZOCSARewardBalanceOf(address token, address owner) external view returns (uint256);
 
   /**
    * @dev Returns the address of the reward token paid by the protocol
    */
-  function ZOCSARewardToken() external view returns (address);
+  function ZOCSARewardToken(address token) external view returns (address);
 
   /**
    * @dev Returns the bounded ocsa balance of this user 
    * @param owner The owner address.
    */
-  function ZOCSABoundedBalanceOf(address owner) external view returns (uint256);
+  function ZOCSABoundedBalanceOf(address token, address owner) external view returns (uint256);
 
   /**
    * @dev Returns the unbounded ocsa balance of this user 
    * @param owner The owner address.
    */
-  function ZOCSAUnboundedBalanceOf(address owner) external view returns (uint256);
+  function ZOCSAUnboundedBalanceOf(address token, address owner) external view returns (uint256);
   /**
    * @dev Returns the total dividend available to user in the collection
    */
-  function ZOCSAGetAvailableDividends() external view returns (uint256 amount);
+  function ZOCSAGetAvailableDividends(address token) external view returns (uint256 amount);
 
   /**
    * @dev Returns the cost for one OCSA in this collection
    */
-  function ZOCSAGetOCSAPrice() external view returns (uint256 amount);
+  function ZOCSAGetOCSAPrice(address token) external view returns (uint256 amount);
 
   /**
    * @dev Allow user to withdraw their earning 
    */
-	function ZOCSAWithdrawUserEarnings(address from, address to, uint256 amount) external;
+	function ZOCSAWithdrawUserEarnings(address token, address from, address to, uint256 amount) external;
   
   /**
    * @notice Bound OCSA to actual owner, which activate the income generating property of OCSA
    * @param amount The amount of OCSA to bound to actual owner.
   */
-  function ZOCSABoundOCSA(address user, uint256 amount) external;
+  function ZOCSABoundOCSA(address token, address user, uint256 amount) external;
+
+  /**
+   * @dev Updates the project description for a ZOCSA token.
+   * @param from admin address.
+   * @param token The token address to update.
+   * @param newDescription The new description string.
+   */
+  function ZOCSAUpdateProjectDescription(address token, address from,  string memory newDescription) external;
+
+  /**
+   * @dev Dispatches user rewards for a ZOCSA token.
+   * @param token The token address for which to dispatch rewards.
+   * @param from admin address who pay the dispatch.
+   * @param amount The amount of rewards to dispatch.
+   */
+  function ZOCSADispatchUserReward(address token, address from, uint256 amount) external;
 }

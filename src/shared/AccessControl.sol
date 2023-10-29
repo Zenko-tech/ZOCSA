@@ -3,7 +3,7 @@ pragma solidity >=0.8.21;
 
 import { LibDiamond } from "lib/diamond-2-hardhat/contracts/libraries/LibDiamond.sol";
 import { MetaContext } from "./MetaContext.sol";
-import { LibAppStorage } from "../libs/LibAppStorage.sol";
+import { LibAppStorage, AppStorage } from "../libs/LibAppStorage.sol";
 import { LibString } from "../libs/LibString.sol";
 
 /**
@@ -16,22 +16,23 @@ error CallerMustBeAdminError();
  * @dev Access control module.
  */
 abstract contract AccessControl is MetaContext {
-  modifier isAdmin() {
-    if (LibDiamond.contractOwner() != _msgSender()) {
+  modifier isDiamondAdmin() {
+    if (LibDiamond.contractOwner() != _msgSender() && LibAppStorage.diamondStorage().diamondAdmins[_msgSender()] == false ) {
       revert CallerMustBeAdminError();
     }
     _;
   }
 
-  modifier isAdminMinter() {
-    if (LibAppStorage.diamondStorage().adminMinter != _msgSender()) {
+  modifier isCollectionAdmin(address token, address from) {
+    AppStorage storage s = LibAppStorage.diamondStorage();
+    if (s.isCollectionAdmin[s.collectionWhiteListId[token]][from] == 0) {
       revert CallerMustBeAdminError();
     }
     _;
   }
 
   modifier onlyZOCSAFacades() {
-    if (LibAppStorage.diamondStorage().zOcsaApprovedFacades[_msgSender()] != true) {
+    if (LibAppStorage.diamondStorage().zOcsaApprovedFacades[_msgSender()] == false) {
       revert CallerMustBeAdminError();
     }
     _;
