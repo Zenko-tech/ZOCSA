@@ -5,12 +5,12 @@ import "forge-std/Test.sol";
 import { ZOCSA } from "src/facades/ZOCSA.sol";
 
 import { Vm } from "forge-std/Vm.sol";
-import { TestBaseContract, console2 } from "./utils/TestBaseContract.sol";
+import { TestBaseContract, console2, console } from "./utils/TestBaseContract.sol";
 import "../src/facets/ZOCSAFacet.sol";
 import "../src/libs/LibZOCSA.sol";
 import "../src/shared/AccessControl.sol";
 import { LibString } from "../src/libs/LibString.sol";
-import { ZOCSAInfos, ZOCSATokenConfig } from "../src/shared/Structs.sol";
+import { ZOCSAInfos, ZOCSATokenConfig, ZOCSACheckpoint } from "../src/shared/Structs.sol";
 import { ERC20TestContract } from "testing_contracts/ERC20TestContract.sol";
 
 contract ZOCSATest is TestBaseContract {
@@ -66,12 +66,17 @@ contract ZOCSATest is TestBaseContract {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                         Test Deploy Diamond Facades                        */
+  /*                         Test Deploy Diamond Collections                    */
   /* -------------------------------------------------------------------------- */
 
-    // /!\/!\ TODO /!\/!\ 
-    // WIP : struc infos token
-    // /!\/!\ TODO /!\/!\ 
+  function testAllCollectionsInfos() public {
+    _deployFacade(100);
+    _deployFacade(100);
+    ZOCSAInfos[] memory datas = diamond.ZOCSAGetAllCollectionsInfos();
+    assertEq(datas.length, 2, "Error lengths mismatch");
+    assertEq(datas[0].name, datas[1].name, "Invalid name");
+  }
+
   function testDeployFacadeSucceeds() public {
     vm.recordLogs();
     diamond.ZOCSADeployToken(ZOCSATokenConfig(
@@ -105,19 +110,22 @@ contract ZOCSATest is TestBaseContract {
 
     ZOCSA temp = ZOCSA(t);
     ZOCSAInfos memory infos = temp.getCollectionInfos();
-    // console2.log("TEMP RETRIEVED IS : ", temp);
-    assertEq(temp.name(), "Test Collection", "Invalid name");
-    assertEq(temp.symbol(), "TEST", "Invalid symbol");
-    assertEq(temp.description(), "Test Project Description", "Invalid description");
-    assertEq(temp.maxSupply(), 5000, "Invalid max Supply");
-    // TODO : WIP : struc infos token
-    // assertEq(temp.description(), "Test Project Description", "Invalid description");
-    // assertEq(temp.description(), "Test Project Description", "Invalid description");
-    // assertEq(temp.description(), "Test Project Description", "Invalid description");
-    // assertEq(temp.description(), "Test Project Description", "Invalid description");
-    // // ... keep going ...
-
-
+    assertEq(infos.collectionAddress, address(temp), "Invalid address");
+    assertEq(infos.name, "Test Collection", "Invalid name");
+    assertEq(infos.symbol, "TEST", "Invalid symbol");
+    assertEq(infos.description, "Test Project Description", "Invalid description");
+    assertEq(infos.whitelistId, 1, "Invalid whitelist (should be Zenko global whitelist 1)");
+    assertEq(infos.totalSupply, 0, "Invalid total Supply");
+    assertEq(infos.maxSupply, 5000, "Invalid max Supply");
+    assertEq(infos.totalUnboundedOcsa, 0, "Invalid unbounded Supply");
+    assertEq(infos.totalBoundedOcsa, 0, "Invalid bounded Supply");
+    assertEq(infos.collectionRewardRate, 10, "Invalid OCSA collection reward rate");
+    assertEq(infos.individualShare , ((10 * 1e18) / 5000), "Invalid OCSA individual share");
+    assertEq(infos.tokenPrice, 1, "Invalid OCSA price");
+    assertEq(infos.rewardToken, address(tERC20), "Invalid reward token address");
+    assertEq(infos.collectionTreasury, accountTreasury, "Invalid treasury address");
+    assertEq(infos.actualCheckpointsIndex, 0, "Invalid checkpoint index");
+    assertEq(infos.leftoverReward, 0, "Invalid leftover reward");
   }
 
   function testDeployFacadeFails() public {
@@ -234,25 +242,35 @@ contract ZOCSATest is TestBaseContract {
     ));
 
   }
-/* -------------------------------------------------------------------------- */
-/*                      Test OCSA Collection Information                      */
-/* -------------------------------------------------------------------------- */
-  function testAllCollectionsInfos() public {
-    _deployFacade(100);
-    _deployFacade(100);
-    ZOCSAInfos[] memory datas = diamond.ZOCSAGetAllCollectionsInfos();
-    assertEq(datas.length, 2, "Error lengths mismatch");
-    assertEq(datas[0].name, "Test Collection", "Invalid name");
-    assertEq(datas[1].name, "Test Collection", "Invalid name");
+
+  function testAddAdmin() public {
+    diamond.addNewDiamondAdmin(account1);
+    vm.startPrank(account1);
+    diamond.addNewDiamondAdmin(account2);
+    vm.stopPrank();
   }
 
-  // TODO : test get collection Info
-  // TODO : test get user ocsa info 
 
 /* -------------------------------------------------------------------------- */
 /*                               Test OCSA Mint                               */
 /* -------------------------------------------------------------------------- */
-  // TODO : test whitelisted user mint for himself
+
+  function testShouldBeAbleToMint() public {
+    _deployFacade(100);
+    address[] memory _whitelistAddresses = new address[](1);
+    _whitelistAddresses[0] = account3;
+    diamond.addAddressesToWhitelist(1, _whitelistAddresses);
+    tERC20.transfer(account3, 100e18);
+    vm.startPrank(account3);
+    tERC20.approve(address(diamond), type(uint256).max);
+    token.mint(account3, 2);
+    vm.stopPrank();
+
+    assertEq(token.balanceOf(account3), 2, "incorrect balance");
+    assertEq(token.boundedBalanceOf(account3), 2, "incorrect balance");
+    assertEq(token.unboundedBalanceOf(account3), 0, "incorrect balance");
+
+  }
 
   function testShouldntBeAbleToMintMaxSupply() public {
     _deployFacade(5000);
@@ -373,7 +391,14 @@ contract ZOCSATest is TestBaseContract {
     assertEq(token.unboundedBalanceOf(account2), 0, "Invalid user unbounded balance");
     assertEq(token.unboundedBalanceOf(account3), 100, "Invalid user unbounded balance");
   }
-
+  // function testCheckpointsPricePerToken() public {
+  //   _deployFacade(5000);
+  //   token.dispatchUserReward(10920e18);
+    
+  //   ZOCSACheckpoint[] memory infos = token.getCollectionCheckpoints();
+  //   assertEq(infos[0].rewardPerToken, 0, "HMM");
+  //   // console.log(token.getCollectionCheckpoints(), token.getCollectionCheckpoints());
+  // }
   /* -------------------------------------------------------------------------- */
   /*                       Test OCSA User Reward Withdraw                       */
   /* -------------------------------------------------------------------------- */

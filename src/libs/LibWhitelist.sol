@@ -25,6 +25,11 @@ library LibWhitelist {
         return (whitelistId);
     }
 
+    function addZenkoWhitelistToPOCSA(uint32 _whitelistId) internal {
+        Whitelist storage whitelist = LibWhitelist.getWhitelistFromWhitelistId(_whitelistId);
+        whitelist.addZenkoWhiteList = true;
+    }
+
     function getNewWhitelistId() internal view returns (uint32 whitelistId) {
         AppStorage storage s = LibAppStorage.diamondStorage();
         whitelistId = uint32(s.whitelists.length + 1); //whitelistId 0 is reserved for "none" 

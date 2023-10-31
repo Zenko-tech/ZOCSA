@@ -3,7 +3,7 @@ pragma solidity >=0.8.21;
 
 import { ZOCSA } from "../facades/ZOCSA.sol";
 import { IZOCSAFacet } from "../interfaces/IZOCSAFacet.sol";
-import { ZOCSAToken, ZOCSATokenConfig, ZOCSAInfos, ZOCSAUserInfo } from "../shared/Structs.sol";
+import { ZOCSAToken, ZOCSATokenConfig, ZOCSAInfos, ZOCSAUserInfo, ZOCSACheckpoint } from "../shared/Structs.sol";
 import { AccessControl } from "../shared/AccessControl.sol";
 import { ReentrancyGuard } from "../shared/ReentrancyGuard.sol";
 import { LibZOCSA } from "../libs/LibZOCSA.sol";
@@ -172,7 +172,7 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
     t.tokenPrice = config.tokenPrice;
     t.rewardToken = config.rewardToken;
     t.collectionTreasury = config.collectionTreasury;
-    uint256 _tokenIndividualShare = t.collectionRewardRate / t.maxSupply;
+    uint256 _tokenIndividualShare = (t.collectionRewardRate * 1e18) / t.maxSupply;
     t.individualShare = _tokenIndividualShare;
 
     emit ZOCSANewToken(token);
@@ -262,13 +262,13 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
     return LibZOCSA.getUserInfo(token, user);
   }
 
-  /**
-    * @dev Returns all OCSAs collections deployed.
-    */
-  function ZOCSAGetAllCollections() external view returns (address[] memory)
-  {
-    return LibAppStorage.diamondStorage().zOcsaCollections;
-  }
+  // /**
+  //   * @dev Returns all OCSAs collections deployed.
+  //   */
+  // function ZOCSAGetAllCollections() external view returns (address[] memory)
+  // {
+  //   return LibAppStorage.diamondStorage().zOcsaCollections;
+  // }
 
   /**
    * @dev Returns the project description of the token.
@@ -277,12 +277,12 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
     return LibAppStorage.diamondStorage().zOcsas[token].description;
   }
 
-  /**
-   * @dev Get this collection project reward rate.
-   */
-  function ZOCSACollectionRewardRate(address token) external view returns (uint256) {
-    return LibAppStorage.diamondStorage().zOcsas[token].collectionRewardRate;
-  }
+  // /**
+  //  * @dev Get this collection project reward rate.
+  //  */
+  // function ZOCSACollectionRewardRate(address token) external view returns (uint256) {
+  //   return LibAppStorage.diamondStorage().zOcsas[token].collectionRewardRate;
+  // }
 
   /**
    * @dev Get the max supply of this OCSA collection.
@@ -348,5 +348,12 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
    */
   function ZOCSAGetOCSAPrice(address token) external view returns (uint256 amount) {
     return LibAppStorage.diamondStorage().zOcsas[token].tokenPrice;
+  }
+
+  /**
+   * @dev Returns all checkpoints for this collection
+   */
+  function ZOCSAGetCollectionCheckpoints(address token) external view returns (ZOCSACheckpoint[] memory) {
+    return LibAppStorage.diamondStorage().zOcsas[token].checkpoints;
   }
 }

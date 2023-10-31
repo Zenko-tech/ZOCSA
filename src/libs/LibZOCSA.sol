@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { ZOCSAToken, ZOCSACheckpoint, ZOCSAInfos, ZOCSAUserInfo } from "../shared/Structs.sol";
+import { ZOCSAToken, ZOCSACheckpoint, ZOCSAInfos, ZOCSAUserInfo, ZOCSATokenConfig } from "../shared/Structs.sol";
 import { AppStorage, LibAppStorage } from "./LibAppStorage.sol";
 import { LibWhitelist } from "./LibWhitelist.sol";
 import { IERC20 } from "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
@@ -42,11 +42,6 @@ library LibZOCSA {
    */
   event ZOCSANewReward(address indexed ZOCSAToken, uint256 amount, uint256 checkpointIndex);
 
-  //   /**
-  //  * @dev Emitted when a token is sold from marketplace and send to buyer.
-  //  */
-  // event ZOCSABuyFromMarketPlace(address token, address marketPlace, address from, address to, uint256 value);
-  
   /*
     ERC20 implementation
   */
@@ -167,27 +162,6 @@ library LibZOCSA {
     t.balances[to] += amount;
 }
 
-  /**
-    * @dev Burn a token.
-    *
-    * @param token The token to burn.
-    * @param from The address to burn the token from.
-    * @param amount The amount to burn.
-    */
-  function burn(address token, address from, uint256 amount) internal {
-    revert("Not Implemented Yet");
-
-    // ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
-    // if (t.balances[from] < amount) {
-    //   revert ZOCSANotEnoughBalance(from);
-    // }
-    // _onAssetCountChange(token, from);
-    // t.totalSupply -= amount;
-    // t.balances[from] -= amount;
-
-    // emit ZOCSABurned(token, from, amount);
-  }  
-
   /*
     OCSA implementation
   */
@@ -207,8 +181,6 @@ library LibZOCSA {
       ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
       _calculateDividend(token, from);
       require(t.dividends[from] >= amount, "ZOCSA: No enough dividends to withdraw");
-      //withdraw from potential DeFi integration would take place here
-      // ...
       
       t.dividends[from] -= amount;
       t.dividends[address(this)] -= amount;

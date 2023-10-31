@@ -51,8 +51,14 @@ contract WhitelistFacet is AccessControl, ReentrancyGuard {
         emit WhitelistUpdated(_whitelistId);
     }
 
-    function whitelistExists(uint32 whitelistId) external view returns (bool exists) {
-        exists = LibWhitelist._whitelistExists(whitelistId);
+    function addZenkoWhitelist(uint32 _whitelistId) external {
+        require(LibWhitelist._whitelistExists(_whitelistId), "WhitelistFacet: Whitelist not found");
+        require(LibWhitelist.isWhitelistAdmin(_whitelistId, _msgSender()), "WhitelistFacet: Not whitelisted admin");
+        LibWhitelist.addZenkoWhitelistToPOCSA(_whitelistId);
+    }
+
+    function whitelistExists(uint32 _whitelistId) external view returns (bool exists) {
+        exists = LibWhitelist._whitelistExists(_whitelistId);
     }
 
     // 0 is non whitelisted, else return position in whitelist

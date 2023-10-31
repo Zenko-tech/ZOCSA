@@ -5,10 +5,10 @@ import { IERC20 } from "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.
 import { IERC20Metadata } from "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { IZOCSAFacet } from "../interfaces/IZOCSAFacet.sol";
 import { MetaContext } from "../shared/MetaContext.sol";
-import { ZOCSAInfos, ZOCSAUserInfo } from "../shared/Structs.sol";
+import { ZOCSAInfos, ZOCSAUserInfo, ZOCSACheckpoint } from "../shared/Structs.sol";
 
 /**
- * @dev Facade implementation of ERC20 token.
+ * @dev Facade implementation of ERC20 OCSA token.
  * 
  * Diamond can deploy multiple such tokens, all backed by the same implementation within the Diamond.
  */
@@ -219,6 +219,14 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
   function getCollectionInfos() external view returns (ZOCSAInfos memory)
   {
       return _parent.ZOCSAGetCollectionInfos(address(this));
+  }
+
+  /**
+   * @dev Returns all checkpoints for this collection
+   */
+  function getCollectionCheckpoints() external view returns (ZOCSACheckpoint[] memory)
+  {
+    return _parent.ZOCSAGetCollectionCheckpoints(address(this));
   }
 
   /**

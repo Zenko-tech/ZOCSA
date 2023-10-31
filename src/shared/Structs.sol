@@ -39,7 +39,7 @@ struct ZOCSAInfos {
   uint256 totalUnboundedOcsa;
   uint256 totalBoundedOcsa;
   uint256 collectionRewardRate;
-  uint256 individualShare;
+  uint256 individualShare; // to divide by 1e18 to retrieve correct value
   uint256 tokenPrice;
   address rewardToken;
   address collectionTreasury;
@@ -59,7 +59,7 @@ struct ZOCSAUserInfo {
   uint256 totalUnboundedOcsa;
   uint256 totalBoundedOcsa;
   uint256 collectionRewardRate;
-  uint256 individualShare;
+  uint256 individualShare; // to divide by 1e18 to retrieve correct value
   uint256 tokenPrice;
   address rewardToken;
   uint256 lastClaimedCheckpointIndex;
@@ -92,8 +92,8 @@ struct ZOCSAToken {
 
   // Total shares of this collection
   uint256 collectionRewardRate;
-  // collectionRewardRate / holders
-  uint256 individualShare;
+  // collectionRewardRate / max supply 
+  uint256 individualShare; // to divide by 1e18 to retrieve correct value
   // ocsa buy price in wei
   uint256 tokenPrice;
   // Reward token address
@@ -104,7 +104,6 @@ struct ZOCSAToken {
   // All rewards deposited by project admin
   ZOCSACheckpoint[] checkpoints;
   
-  uint256 actualCheckpointsIndex;
   // User last claimed checkpoint
   mapping(address => uint256) lastClaimedCheckpointIndex;
   // User Temporary balance used to store previous rewards before new asset mint 
