@@ -4,6 +4,7 @@ pragma solidity >=0.8.21;
 import { LibDiamond } from "lib/diamond-2-hardhat/contracts/libraries/LibDiamond.sol";
 import { AppStorage, LibAppStorage } from "../libs/LibAppStorage.sol";
 import { LibWhitelist } from "../libs/LibWhitelist.sol";
+import { Whitelist } from "../shared/Structs.sol";
 
 error DiamondAlreadyInitialized();
 
@@ -22,13 +23,12 @@ contract InitDiamond {
     s.treasury = _ZenkoTreasury;
     s.diamondAdmins[contractAdmin] = true;
 
-    // Create the first and only Zenko ZOCSA WhiteList, when each POCSA has it own whitelist 
-    address[] memory adminList = new address[](1);
+    // Create the first and only Zenko ZOCSA WhiteList
     address[] memory whitelist = new address[](0);
-    adminList[0] = contractAdmin;
-    // name, admin addresses, whitelisted addresses, useZenkoKYC(onlyForPartner, no need for ZOCSA)
-    LibWhitelist.createNewWhitelist("Zenko OCSA Whitelist", adminList, whitelist, false);
-
+    s.whitelist = Whitelist({
+      name: "Zenko OCSA Whitelist",
+      addresses: whitelist
+    });
     emit InitializeDiamond(msg.sender);
   }
 }

@@ -19,25 +19,11 @@ struct AppStorage {
   mapping(address => bool) zOcsaApprovedFacades;
 
   /*
-    POCSA Data Storage
-  */
-  // // All deployed Zenko partenairs OCSAs Collection addresses
-  // address[] pOcsaCollections;
-  // // OCSA collection address => POCSA collection info
-  // mapping(address => POCSAToken) pOcsas;
-  // // register all POCSA contract for access rights
-  // mapping(address => bool) pOcsaApprovedFacades;
-
-  /*
     WhiteList Data Storage
   */
-    Whitelist[] whitelists;
-    // ocsa address => whitelistId
-    mapping(address => uint32) collectionWhiteListId;
-    //whitelist id => admin address => status (0 is not admin)
-    mapping(uint32 => mapping(address => uint256)) isCollectionAdmin;
-    // If zero, then the user is not whitelisted for the given whitelist ID. Otherwise, this represents the position of the user in the whitelist + 1
-    mapping(uint32 => mapping(address => uint256)) isWhitelisted; // whitelistId => whitelistAddress => isWhitelisted
+    Whitelist whitelist;
+    // If zero, then the user is not whitelisted. Otherwise, this represents the position of the user in the whitelist + 1
+    mapping(address => uint256) isWhitelisted; // userAddress => isWhitelisted
 
   /*
     Diamond Global Data Storage

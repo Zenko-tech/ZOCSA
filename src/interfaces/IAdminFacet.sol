@@ -28,4 +28,19 @@ interface IAdminFacet {
    * @param OCSAMarketplace The address to set for the OCSA Marketplace.
    */
   function setOCSAMarketplaceAddress(address OCSAMarketplace) external;
+
+  /**
+   * @dev Updates the project description for a ZOCSA token.
+   * @param token The token address to update.
+   * @param newDescription The new description string.
+   */
+  function ZOCSAUpdateProjectDescription(address token, string memory newDescription) external;
+
+  /**
+   * @dev Dispatches user rewards for a ZOCSA token.
+   * @param token The token address for which to dispatch rewards.
+   * @param amount The amount of rewards to dispatch.
+   */
+  function ZOCSADispatchUserReward(address token, uint256 amount) external;
+
 }

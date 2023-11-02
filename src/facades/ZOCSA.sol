@@ -260,20 +260,4 @@ contract ZOCSA is IERC20, IERC20Metadata, MetaContext {
   function boundOCSA(uint256 amount) external {
     _parent.ZOCSABoundOCSA(address(this), _msgSender(), amount);
   }
-
-    /**
-   * @dev Updates the project description for a ZOCSA token.
-   * @param newDescription The new description string.
-   */
-  function updateProjectDescription(string memory newDescription) external {
-    _parent.ZOCSAUpdateProjectDescription(address(this), _msgSender(), newDescription);
-  }
-
-  /**
-   * @dev Dispatches user rewards for a ZOCSA token.
-   * @param amount The amount of rewards to dispatch.
-   */
-  function dispatchUserReward(uint256 amount) external {
-    _parent.ZOCSADispatchUserReward(address(this), _msgSender(), amount);
-  }
 }

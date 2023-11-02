@@ -23,14 +23,6 @@ abstract contract AccessControl is MetaContext {
     _;
   }
 
-  modifier isCollectionAdmin(address token, address from) {
-    AppStorage storage s = LibAppStorage.diamondStorage();
-    if (s.isCollectionAdmin[s.collectionWhiteListId[token]][from] == 0) {
-      revert CallerMustBeAdminError();
-    }
-    _;
-  }
-
   modifier onlyZOCSAFacades() {
     if (LibAppStorage.diamondStorage().zOcsaApprovedFacades[_msgSender()] == false) {
       revert CallerMustBeAdminError();

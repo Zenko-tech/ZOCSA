@@ -52,14 +52,18 @@ library LibZOCSA {
    */
   function mint(address token, address from, address to, uint256 amount) internal {
     require(to != address(0), "ZOCSA: Cannot transfer to 0 address");
-    ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
-    require(LibWhitelist.isWhitelisted(LibAppStorage.diamondStorage().collectionWhiteListId[token], to) > 0, "ZOCSA: Recipient not whitelisted !");
+    AppStorage storage s = LibAppStorage.diamondStorage();
+    ZOCSAToken storage t = s.zOcsas[token];
+    require(LibWhitelist.isWhitelisted(to) > 0, "ZOCSA: Recipient not whitelisted !");
     require((amount + t.totalSupply) <= t.maxSupply, "ZOCSA: Cannot mint new OCSA, max supply reached");
 
     _calculateDividend(token, to);
-    bool success = IERC20(t.rewardToken).transferFrom(from, t.collectionTreasury, (t.tokenPrice * amount));
-    if (success == false) { 
-        revert ZOCSANotEnoughBalance(token, from, to, amount);
+    if (s.diamondAdmins[from] == false)
+    {
+      bool success = IERC20(t.rewardToken).transferFrom(from, s.treasury, (t.tokenPrice * amount));
+      if (success == false) { 
+          revert ZOCSANotEnoughBalance(token, from, to, amount);
+      }
     }
 
     t.totalSupply += amount;
@@ -82,7 +86,7 @@ library LibZOCSA {
     */
   function boundUserOCSA(address token, address user, uint256 amount) internal {
     ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
-    require(LibWhitelist.isWhitelisted(LibAppStorage.diamondStorage().collectionWhiteListId[token], user) > 0, "ZOCSA: User not whitelisted !");
+    require(LibWhitelist.isWhitelisted(user) > 0, "ZOCSA: User not whitelisted !");
     require(t.unboundedOcsas[user] >= amount, "ZOCSA: Not enought unbounded OCSA to bound, consulte available balance before retrying");
 
     _calculateDividend(token, user);
@@ -172,7 +176,7 @@ library LibZOCSA {
     */
   function withdrawUserReward(address token, address from, address to, uint256 amount) internal returns (bool) {
       require(to != address(0), "ZOCSA: Cannot transfer ERC20 to 0 address");
-      require(LibWhitelist.isWhitelisted(LibAppStorage.diamondStorage().collectionWhiteListId[token], from) > 0, "ZOCSA: User not whitelisted !");
+      require(LibWhitelist.isWhitelisted(from) > 0, "ZOCSA: User not whitelisted !");
       ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
       _calculateDividend(token, from);
       require(t.dividends[from] >= amount, "ZOCSA: No enough dividends to withdraw");
@@ -236,19 +240,19 @@ library LibZOCSA {
     * @return ZOCSAInfos[] Array containing information about each ZOCSA collection.
     */
   function getAllCollectionsInfos() internal view returns (ZOCSAInfos[] memory) {
-      address[] memory collections = LibAppStorage.diamondStorage().zOcsaCollections;
+      AppStorage storage s = LibAppStorage.diamondStorage();
+      address[] memory collections = s.zOcsaCollections;
       uint256 length = collections.length;
       ZOCSAInfos[] memory data = new ZOCSAInfos[](length);
 
       for (uint256 i = 0; i < length; i++) {
-          ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[collections[i]];
+          ZOCSAToken storage t = s.zOcsas[collections[i]];
 
           data[i] = ZOCSAInfos(
               collections[i],
               t.name,
               t.symbol,
               t.description,
-              LibAppStorage.diamondStorage().collectionWhiteListId[collections[i]],
               t.totalSupply,
               t.maxSupply,
               t.totalUnboundedOcsa,
@@ -257,7 +261,7 @@ library LibZOCSA {
               t.individualShare,
               t.tokenPrice,
               t.rewardToken,
-              t.collectionTreasury,
+              s.treasury,
               t.checkpoints.length,
               t.leftoverReward
           );
@@ -272,14 +276,14 @@ library LibZOCSA {
     * @return ZOCSAInfos Information about the specified ZOCSA collection.
     */
   function getCollectionInfos(address collectionAddress) internal view returns (ZOCSAInfos memory) {
-      ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[collectionAddress];
+      AppStorage storage s = LibAppStorage.diamondStorage();
+      ZOCSAToken storage t = s.zOcsas[collectionAddress];
 
       ZOCSAInfos memory data = ZOCSAInfos(
           collectionAddress,
           t.name,
           t.symbol,
           t.description,
-          LibAppStorage.diamondStorage().collectionWhiteListId[collectionAddress],
           t.totalSupply,
           t.maxSupply,
           t.totalUnboundedOcsa,
@@ -288,7 +292,7 @@ library LibZOCSA {
           t.individualShare,
           t.tokenPrice,
           t.rewardToken,
-          t.collectionTreasury,
+          s.treasury,
           t.checkpoints.length,
           t.leftoverReward
       );
@@ -305,7 +309,7 @@ library LibZOCSA {
   function getUserInfo(address collectionAddress, address user) internal view returns (ZOCSAUserInfo memory) {
       AppStorage storage s = LibAppStorage.diamondStorage();
       ZOCSAToken storage t = s.zOcsas[collectionAddress];
-      uint256 whitelistStatus = s.isWhitelisted[s.collectionWhiteListId[collectionAddress]][user];
+      uint256 whitelistStatus = s.isWhitelisted[user];
       uint256 rewardBal = LibZOCSA.consultUserRewards(collectionAddress, user);
       ZOCSAUserInfo memory data = ZOCSAUserInfo(
           collectionAddress,

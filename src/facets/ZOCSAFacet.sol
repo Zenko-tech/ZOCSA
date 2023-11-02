@@ -146,8 +146,7 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
       config.maxSupply == 0 ||
       config.collectionRewardRate == 0 ||
       config.tokenPrice == 0 || 
-      config.rewardToken == address(0) ||
-      config.collectionTreasury == address(0)
+      config.rewardToken == address(0)
     ) {
       revert ZOCSAInvalidInput();
     }
@@ -156,11 +155,6 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
     address token = address(new ZOCSA(this));
     s.zOcsaCollections.push(token);
     s.zOcsaApprovedFacades[token] = true;
-
-    s.collectionWhiteListId[token] = 1; // Zenko OCSA goes with same global whitelist
-    // FOR POCSA ONLY
-    // string whitelistName = string(abi.encodePacked("Whitelist :", config.name));
-    // uint32 whitelistId = LibWhitelist.createNewWhitelist(whitelistName, config.adminAddresses, config.whitelistAddresses);
 
     ZOCSAToken storage t = s.zOcsas[token];
     t.name = config.name;
@@ -171,7 +165,6 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
     t.collectionRewardRate = config.collectionRewardRate;
     t.tokenPrice = config.tokenPrice;
     t.rewardToken = config.rewardToken;
-    t.collectionTreasury = config.collectionTreasury;
     uint256 _tokenIndividualShare = (t.collectionRewardRate * 1e18) / t.maxSupply;
     t.individualShare = _tokenIndividualShare;
 
@@ -197,37 +190,6 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
   */
   function ZOCSABoundOCSA(address token, address user, uint256 amount) external onlyZOCSAFacades() {
     LibZOCSA.boundUserOCSA(token, user, amount);
-  }
-
-  /**
-   * @dev Updates the project description for a ZOCSA token.
-   * @param token The token address to update.
-   * @param from Admin address.
-   * @param newDescription The new description string.
-   */
-  function ZOCSAUpdateProjectDescription(
-    address token, 
-    address from, 
-    string memory newDescription
-  ) external onlyZOCSAFacades() isCollectionAdmin(token, from) {
-    if (LibString.len(newDescription) == 0) {
-      revert ZOCSAInvalidInput();
-    }
-    ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
-    t.description = newDescription;
-  }
-
-  /**
-   * @dev Dispatches user rewards for a ZOCSA token.
-   * @param token The token address for which to dispatch rewards.
-   * @param from Address from which rewards are coming.
-   * @param amount The amount of rewards to dispatch.
-   */
-  function ZOCSADispatchUserReward(address token, address from, uint256 amount) external onlyZOCSAFacades() isCollectionAdmin(token, from) {
-    if (amount == 0) {
-      revert ZOCSAInvalidInput();
-    }
-    LibZOCSA.dispatchProjectReward(token, from, amount);
   }
 
   /*
@@ -262,13 +224,13 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
     return LibZOCSA.getUserInfo(token, user);
   }
 
-  // /**
-  //   * @dev Returns all OCSAs collections deployed.
-  //   */
-  // function ZOCSAGetAllCollections() external view returns (address[] memory)
-  // {
-  //   return LibAppStorage.diamondStorage().zOcsaCollections;
-  // }
+  /**
+    * @dev Returns all OCSAs collections deployed.
+    */
+  function ZOCSAGetAllCollections() external view returns (address[] memory)
+  {
+    return LibAppStorage.diamondStorage().zOcsaCollections;
+  }
 
   /**
    * @dev Returns the project description of the token.
@@ -277,12 +239,12 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
     return LibAppStorage.diamondStorage().zOcsas[token].description;
   }
 
-  // /**
-  //  * @dev Get this collection project reward rate.
-  //  */
-  // function ZOCSACollectionRewardRate(address token) external view returns (uint256) {
-  //   return LibAppStorage.diamondStorage().zOcsas[token].collectionRewardRate;
-  // }
+  /**
+   * @dev Get this collection project reward rate.
+   */
+  function ZOCSACollectionRewardRate(address token) external view returns (uint256) {
+    return LibAppStorage.diamondStorage().zOcsas[token].collectionRewardRate;
+  }
 
   /**
    * @dev Get the max supply of this OCSA collection.

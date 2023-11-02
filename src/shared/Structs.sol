@@ -8,12 +8,8 @@ struct MetaTxContextStorage {
 struct Whitelist {
     // name of this whitelist
     string name;
-    // all whitelist admins
-    address[] admins;
     // all users whitelisted
     address[] addresses;
-    // Add Zenko KYC/Legal contracts signature for POCSA
-    bool addZenkoWhiteList;
 }
 
 // OCSA Collection display info
@@ -22,7 +18,6 @@ struct ZOCSAInfos {
   string name;
   string symbol;
   string description;
-  uint32 whitelistId;
   uint256 totalSupply;
   uint256 maxSupply;
   uint256 totalUnboundedOcsa;
@@ -98,8 +93,6 @@ struct ZOCSAToken {
   uint256 tokenPrice;
   // Reward token address
   address rewardToken;
-  // Treasury Address of this collection
-  address collectionTreasury;
 
   // All rewards deposited by project admin
   ZOCSACheckpoint[] checkpoints;
@@ -123,7 +116,4 @@ struct ZOCSATokenConfig {
     uint256 collectionRewardRate;
     uint256 tokenPrice;
     address rewardToken;
-    address collectionTreasury;
-    address[] adminAddresses;
-    address[] whitelistAddresses;
 }

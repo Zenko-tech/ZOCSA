@@ -90,6 +90,7 @@ npx prettier --write --plugin=prettier-plugin-solidity 'src/**/*.sol'
 [] if destination is contract, ensure mint to and transfer to can handle transfer : _checkOnERC20Received()
 [] Remove TempBalance System on assetCountChange (make sure _calculateDividend() do the job)
 [] add pausable status on OCSA transfer 
+[] add free ocsa mint for zenko admin wallet
 
 ------------------------------------------------------
 [~] /!\ potential bound ocsa / unbounded ? bound reverse a nouveau les gains sur TX d'activation ?

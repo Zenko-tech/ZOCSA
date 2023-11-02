@@ -88,10 +88,10 @@ interface IZOCSAFacet {
     */
   function ZOCSAGetCollectionInfos(address token) external view returns (ZOCSAInfos memory);
 
-  // /**
-  //   * @dev Returns all OCSAs collections deployed.
-  //   */
-  // function ZOCSAGetAllCollections() external view returns (address[] memory);
+  /**
+    * @dev Returns all OCSAs collections deployed.
+    */
+  function ZOCSAGetAllCollections() external view returns (address[] memory);
 
   /**
     * @dev Get information about a user's OCSA.
@@ -105,10 +105,10 @@ interface IZOCSAFacet {
    */
   function ZOCSADescription(address token) external view returns (string memory);
 
-  // /**
-  //  * @dev Get this collection project reward rate.
-  //  */
-  // function ZOCSACollectionRewardRate(address token) external view returns (uint256);
+  /**
+   * @dev Get this collection project reward rate.
+   */
+  function ZOCSACollectionRewardRate(address token) external view returns (uint256);
 
   /**
    * @dev Get the max supply of this OCSA collection.
@@ -167,22 +167,6 @@ interface IZOCSAFacet {
    * @param amount The amount of OCSA to bound to actual owner.
   */
   function ZOCSABoundOCSA(address token, address user, uint256 amount) external;
-
-  /**
-   * @dev Updates the project description for a ZOCSA token.
-   * @param from admin address.
-   * @param token The token address to update.
-   * @param newDescription The new description string.
-   */
-  function ZOCSAUpdateProjectDescription(address token, address from,  string memory newDescription) external;
-
-  /**
-   * @dev Dispatches user rewards for a ZOCSA token.
-   * @param token The token address for which to dispatch rewards.
-   * @param from admin address who pay the dispatch.
-   * @param amount The amount of rewards to dispatch.
-   */
-  function ZOCSADispatchUserReward(address token, address from, uint256 amount) external;
 
   /**
    * @dev Returns all checkpoints for this collection

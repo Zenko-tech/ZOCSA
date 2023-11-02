@@ -50,10 +50,7 @@ contract ZOCSATest is TestBaseContract {
       _maxSupply, //maxSupply
       10, //collectionRewardRate
       1 ether, // tokenPrice = 1e18
-      address(tERC20), // rewardToken
-      accountTreasury, // collection treasury address 
-      emptyAddrArr,
-      emptyAddrArr
+      address(tERC20) // rewardToken
     ))));
     // admin reward dispatcher Approve Diamond with max bal to ease testing 
     tERC20.approve(address(diamond), type(uint256).max);
@@ -62,7 +59,7 @@ contract ZOCSATest is TestBaseContract {
     _whitelistAddresses[0] = account0;
     _whitelistAddresses[1] = account1;
     _whitelistAddresses[2] = account2;
-    diamond.addAddressesToWhitelist(1, _whitelistAddresses);
+    diamond.addAddressesToWhitelist(_whitelistAddresses);
   }
 
   /* -------------------------------------------------------------------------- */
@@ -86,10 +83,7 @@ contract ZOCSATest is TestBaseContract {
       5000, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(tERC20), // rewardToken
-      accountTreasury, // collection treasury address 
-      emptyAddrArr,
-      emptyAddrArr
+      address(tERC20) // rewardToken
     ));
 
     Vm.Log[] memory entries = vm.getRecordedLogs();
@@ -114,7 +108,6 @@ contract ZOCSATest is TestBaseContract {
     assertEq(infos.name, "Test Collection", "Invalid name");
     assertEq(infos.symbol, "TEST", "Invalid symbol");
     assertEq(infos.description, "Test Project Description", "Invalid description");
-    assertEq(infos.whitelistId, 1, "Invalid whitelist (should be Zenko global whitelist 1)");
     assertEq(infos.totalSupply, 0, "Invalid total Supply");
     assertEq(infos.maxSupply, 5000, "Invalid max Supply");
     assertEq(infos.totalUnboundedOcsa, 0, "Invalid unbounded Supply");
@@ -137,10 +130,7 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(tERC20), // rewardToken
-      accountTreasury, // collection treasury address 
-      emptyAddrArr,
-      emptyAddrArr
+      address(tERC20) // rewardToken
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -151,10 +141,7 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(tERC20), // rewardToken
-      accountTreasury, // collection treasury address 
-      emptyAddrArr,
-      emptyAddrArr    
+      address(tERC20) // rewardToken 
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -165,10 +152,7 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(tERC20), // rewardToken
-      accountTreasury, // collection treasury address 
-      emptyAddrArr,
-      emptyAddrArr
+      address(tERC20) // rewardToken
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -179,10 +163,7 @@ contract ZOCSATest is TestBaseContract {
       0, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(tERC20), // rewardToken
-      accountTreasury, // collection treasury address 
-      emptyAddrArr,
-      emptyAddrArr
+      address(tERC20) // rewardToken
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -193,10 +174,7 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       0, //collectionRewardRate
       1, // tokenPrice 
-      address(tERC20), // rewardToken
-      accountTreasury, // collection treasury address 
-      emptyAddrArr,
-      emptyAddrArr
+      address(tERC20) // rewardToken
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -207,10 +185,7 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       0, // tokenPrice 
-      address(tERC20), // rewardToken
-      accountTreasury, // collection treasury address 
-      emptyAddrArr,
-      emptyAddrArr
+      address(tERC20) // rewardToken
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -221,26 +196,8 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(0), // rewardToken
-      accountTreasury, // collection treasury address 
-      emptyAddrArr,
-      emptyAddrArr
+      address(0) // rewardToken
     ));
-
-    vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
-    diamond.ZOCSADeployToken(ZOCSATokenConfig(      
-      "Test Collection", // name
-      "TEST", // symbol
-      "Test Project Description", //description 
-      100, //maxSupply
-      10, //collectionRewardRate
-      1, // tokenPrice 
-      address(tERC20), // rewardToken
-      address(0), // collection treasury address 
-      emptyAddrArr,
-      emptyAddrArr
-    ));
-
   }
 
   function testAddAdmin() public {
@@ -259,7 +216,7 @@ contract ZOCSATest is TestBaseContract {
     _deployFacade(100);
     address[] memory _whitelistAddresses = new address[](1);
     _whitelistAddresses[0] = account3;
-    diamond.addAddressesToWhitelist(1, _whitelistAddresses);
+    diamond.addAddressesToWhitelist(_whitelistAddresses);
     tERC20.transfer(account3, 100e18);
     vm.startPrank(account3);
     tERC20.approve(address(diamond), type(uint256).max);
@@ -332,7 +289,7 @@ contract ZOCSATest is TestBaseContract {
     token.mint(account2, 10);
     vm.stopPrank();
     uint256 balBefore = tERC20.balanceOf(admin);
-    token.dispatchUserReward(100e18);
+    diamond.ZOCSADispatchUserReward(address(token), 100e18);
     uint256 balAfter = tERC20.balanceOf(admin);
     rewardPerToken = 100e18 / 100;
     // console2.log(balBefore, balAfter);
@@ -347,7 +304,7 @@ contract ZOCSATest is TestBaseContract {
     token.mint(account2, 30);
     vm.stopPrank();
     balBefore = tERC20.balanceOf(admin);
-    token.dispatchUserReward(100e18);
+    diamond.ZOCSADispatchUserReward(address(token), 100e18);
     balAfter = tERC20.balanceOf(admin);
     // console2.log(balBefore, balAfter);
     assertEq(balAfter, balBefore - 100e18, "Invalid Admin Balance");
@@ -367,7 +324,7 @@ contract ZOCSATest is TestBaseContract {
     token.transfer(account3, 40);
     vm.stopPrank();
     balBefore = tERC20.balanceOf(admin);
-    token.dispatchUserReward(100e18);
+    diamond.ZOCSADispatchUserReward(address(token), 100e18);
     balAfter = tERC20.balanceOf(admin);
     // console2.log(balBefore, balAfter);
     assertEq(balAfter, balBefore, "Invalid Admin Balance");
@@ -393,7 +350,7 @@ contract ZOCSATest is TestBaseContract {
   }
   // function testCheckpointsPricePerToken() public {
   //   _deployFacade(5000);
-  //   token.dispatchUserReward(10920e18);
+  //   diamond.ZOCSADispatchUserReward(address(token), 10920e18);
     
   //   ZOCSACheckpoint[] memory infos = token.getCollectionCheckpoints();
   //   assertEq(infos[0].rewardPerToken, 0, "HMM");
@@ -428,7 +385,7 @@ contract ZOCSATest is TestBaseContract {
     token.mint(account0, 1);
     vm.stopPrank();
 
-    token.dispatchUserReward(100e18);
+    diamond.ZOCSADispatchUserReward(address(token), 100e18);
 
     assertEq(tERC20.balanceOf(account0), 0, "Reward balance should be empty");
     assertEq(_getBal(token.rewardBalanceOf(account0), 18), 1, "Avalaible reward balance should be 1");
@@ -453,7 +410,7 @@ contract ZOCSATest is TestBaseContract {
     token.mint(account0, 1);
     vm.stopPrank();
 
-    token.dispatchUserReward(100e18);
+    diamond.ZOCSADispatchUserReward(address(token), 100e18);
 
     assertEq(tERC20.balanceOf(account0), 0, "Reward balance should be empty");
     assertEq(_getBal(token.rewardBalanceOf(account0), 18), 1, "Avalaible reward balance should be 1");

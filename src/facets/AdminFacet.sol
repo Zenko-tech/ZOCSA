@@ -57,4 +57,32 @@ contract AdminFacet is IAdminFacet, AccessControl {
     AppStorage storage s = LibAppStorage.diamondStorage();
     s.OCSAMarketplace = OCSAMarketplace;
   }
+
+  /**
+   * @dev Updates the project description for a ZOCSA token.
+   * @param token The token address to update.
+   * @param newDescription The new description string.
+   */
+  function ZOCSAUpdateProjectDescription(
+    address token,
+    string memory newDescription
+  ) external isDiamondAdmin() {
+    if (LibString.len(newDescription) == 0) {
+      revert ZOCSAInvalidInput();
+    }
+    ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
+    t.description = newDescription;
+  }
+
+  /**
+   * @dev Dispatches user rewards for a ZOCSA token.
+   * @param token The token address for which to dispatch rewards.
+   * @param amount The amount of rewards to dispatch.
+   */
+  function ZOCSADispatchUserReward(address token, uint256 amount) external isDiamondAdmin() {
+    if (amount == 0) {
+      revert ZOCSAInvalidInput();
+    }
+    LibZOCSA.dispatchProjectReward(token, msg.sender, amount);
+  }
 }
