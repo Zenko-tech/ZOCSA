@@ -7,7 +7,6 @@ import "../shared/Structs.sol";
  * @dev ZOCSA diamond facet interface.
  */
 interface IZOCSAFacet {
-
   /**
    * @dev Returns the name of the token.
    */
@@ -39,7 +38,11 @@ interface IZOCSAFacet {
    * @param account The account address.
    * @param spender The spender address.
    */
-  function ZOCSAAllowance(address token, address account, address spender) external view returns (uint256);
+  function ZOCSAAllowance(
+    address token,
+    address account,
+    address spender
+  ) external view returns (uint256);
 
   /**
    * @dev Mints new ZOCSA tokens.
@@ -66,7 +69,13 @@ interface IZOCSAFacet {
    * @param to The to address.
    * @param amount The amount to transfer.
    */
-  function ZOCSATransfer(address token, address caller, address from, address to, uint256 amount) external;
+  function ZOCSATransfer(
+    address token,
+    address caller,
+    address from,
+    address to,
+    uint256 amount
+  ) external;
 
   /*
     OCSA implementation
@@ -77,28 +86,31 @@ interface IZOCSAFacet {
    * @param config Token config.
    */
   function ZOCSADeployToken(ZOCSATokenConfig memory config) external returns (address);
-  
+
   /**
-    * @dev Returns all deployed ocsa contracts infos.
-    */
+   * @dev Returns all deployed ocsa contracts infos.
+   */
   function ZOCSAGetAllCollectionsInfos() external view returns (ZOCSAInfos[] memory);
 
   /**
-    * @dev Returns specific ocsa contracts infos.
-    */
+   * @dev Returns specific ocsa contracts infos.
+   */
   function ZOCSAGetCollectionInfos(address token) external view returns (ZOCSAInfos memory);
 
   /**
-    * @dev Returns all OCSAs collections deployed.
-    */
+   * @dev Returns all OCSAs collections deployed.
+   */
   function ZOCSAGetAllCollections() external view returns (address[] memory);
 
   /**
-    * @dev Get information about a user's OCSA.
-    * @param user The address of the user to return data from.
-    * @return ZOCSAUserInfo Information about the specified ZOCSA collection user ocsa status.
-    */
-  function ZOCSAGetUserInfo(address token, address user) external view returns (ZOCSAUserInfo memory);
+   * @dev Get information about a user's OCSA.
+   * @param user The address of the user to return data from.
+   * @return ZOCSAUserInfo Information about the specified ZOCSA collection user ocsa status.
+   */
+  function ZOCSAGetUserInfo(
+    address token,
+    address user
+  ) external view returns (ZOCSAUserInfo memory);
 
   /**
    * @dev Returns the project description of the token.
@@ -126,7 +138,7 @@ interface IZOCSAFacet {
   function ZOCSAUnboundedSupply(address token) external view returns (uint256);
 
   /**
-   * @dev Returns the reward balance for this collection by this user (all ocsas earnings) 
+   * @dev Returns the reward balance for this collection by this user (all ocsas earnings)
    * @param owner The owner address.
    */
   function ZOCSARewardBalanceOf(address token, address owner) external view returns (uint256);
@@ -137,16 +149,17 @@ interface IZOCSAFacet {
   function ZOCSARewardToken(address token) external view returns (address);
 
   /**
-   * @dev Returns the bounded ocsa balance of this user 
+   * @dev Returns the bounded ocsa balance of this user
    * @param owner The owner address.
    */
   function ZOCSABoundedBalanceOf(address token, address owner) external view returns (uint256);
 
   /**
-   * @dev Returns the unbounded ocsa balance of this user 
+   * @dev Returns the unbounded ocsa balance of this user
    * @param owner The owner address.
    */
   function ZOCSAUnboundedBalanceOf(address token, address owner) external view returns (uint256);
+
   /**
    * @dev Returns the total dividend available to user in the collection
    */
@@ -158,18 +171,25 @@ interface IZOCSAFacet {
   function ZOCSAGetOCSAPrice(address token) external view returns (uint256 amount);
 
   /**
-   * @dev Allow user to withdraw their earning 
+   * @dev Allow user to withdraw their earning
    */
-	function ZOCSAWithdrawUserEarnings(address token, address from, address to, uint256 amount) external;
-  
+  function ZOCSAWithdrawUserEarnings(
+    address token,
+    address from,
+    address to,
+    uint256 amount
+  ) external;
+
   /**
    * @notice Bound OCSA to actual owner, which activate the income generating property of OCSA
    * @param amount The amount of OCSA to bound to actual owner.
-  */
+   */
   function ZOCSABoundOCSA(address token, address user, uint256 amount) external;
 
   /**
    * @dev Returns all checkpoints for this collection
    */
-  function ZOCSAGetCollectionCheckpoints(address token) external view returns (ZOCSACheckpoint[] memory);
+  function ZOCSAGetCollectionCheckpoints(
+    address token
+  ) external view returns (ZOCSACheckpoint[] memory);
 }

@@ -4,7 +4,7 @@ pragma solidity >=0.8.21;
 /**
  * @dev ERC721 diamond facet interface.
  */
-interface IAdminFacet {  
+interface IAdminFacet {
   /**
    * @dev Sets the treasury address.
    * @param treasury The address to set as the treasury.
@@ -22,7 +22,7 @@ interface IAdminFacet {
    * @param admin The address to set as the admin.
    */
   function removeDiamondAdmin(address admin) external;
-  
+
   /**
    * @dev Sets the address for the OCSA Marketplace.
    * @param OCSAMarketplace The address to set for the OCSA Marketplace.

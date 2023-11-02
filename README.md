@@ -9,7 +9,7 @@ Diamond Smart Contracts using [Gemforge](https://gemforge.xyz) with [Foundry](ht
 
 
 Actual Testnet deployment : 
-- diamond : 0xc754Bb1D9070Ab27993b8b285eBF48dc9aa3CbC5
+- diamond : 
 - test Token : 0xB6B01AAfd3665b1b8296C99DCC1777C51F5c1763
 UI Diamond :
 https://diamondscan.xyz/
@@ -78,15 +78,8 @@ MIT - see [LICSENSE.md](LICENSE.md)
 Prettier :
 npx prettier --write --plugin=prettier-plugin-solidity 'src/**/*.sol'
 
-
-### TODO/ WIP :
-[] Implementation de l'interface IERC20Receiver afin de pouvoir recevoir des coins avec safetransferfrom 
-
-
-[] if destination is contract, ensure mint to and transfer to can handle transfer : _checkOnERC20Received()
-
 ------------------------------------------------------
-[~] /!\ potential bound ocsa / unbounded ? bound reverse a nouveau les gains sur TX d'activation ?
+Bound ocsa / Unbounded : bound reverse a nouveau les gains sur TX d'activation 
 - Transformation d'ocsa (bounded) a standard erc20 (unbounded)
 - potentiel ajout de whitelist sur la function BoundOcsa - permet d'assurer le KYC des user s'inscrivant comme share older (passe de erc20 a ocsa) 
 - evite la distribution des gains sur des wallets type exchange, et apporte des events sur les achats / reventes des users sur marche secondaire
@@ -99,19 +92,10 @@ BalanceBounded() : return bal of bounded ocsa
 BalanceUnBounded() : return bal of unbounded ocsa
 ------------------------------------------------------
 
-## FEATURES POCSA
-- pour l'instant pas de transfert implement
-- Tous les versements des rewards se font bien mensuellement (et manuellement) de maniere fixe ?
-- Change Mint mecanism => POCSA doit mint obligatoirement les ocsa au wallet partenaire admins, qui peut deleguer la vente sur la marketPlace Zenko, ou bien vendre lui meme les tokens 
-=> possibilite de laisser le contrat mint sur whitelist ou sur reception des fonds si Zenko n'est pas emetteur ni compte ? 
+### TODO/ WIP :
+[] Implementation de l'interface IERC20Receiver afin de pouvoir recevoir des coins avec safetransferfrom 
 
-# TESTING : 
-[X] deploying OCSA facades with correct information / view functions
-[X ~ ] testing dispatch logic with simple parameters (Simple distrib?)
-[X] testing asymetric distrib
-[X] testing withdraw 
-[X] shouldnt be able to withdraw if no balance
-[X] shouldnt be able to withdraw from facet
-[X] admin shouldnt be able to mint when max supply reached
-[X] user shouldnt be able to mint from facet (only admin for regulation)
-[X] admin shouldnt be able to mint if receiver is contract without corresponding interface 
+
+[] if destination is contract, ensure mint to and transfer to can handle transfer : _checkOnERC20Received()
+
+

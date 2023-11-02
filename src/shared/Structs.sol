@@ -6,10 +6,10 @@ struct MetaTxContextStorage {
 }
 
 struct Whitelist {
-    // name of this whitelist
-    string name;
-    // all users whitelisted
-    address[] addresses;
+  // name of this whitelist
+  string name;
+  // all users whitelisted
+  address[] addresses;
 }
 
 // OCSA Collection display info
@@ -78,25 +78,22 @@ struct ZOCSAToken {
   // all ocsas claimed as income receiver by their actual owner
   uint256 totalBoundedOcsa;
   // user address => all bounded + unbounded user's ocsas
-  mapping(address => uint256) balances; 
+  mapping(address => uint256) balances;
   // user address => unbounded Ocsa balance
   mapping(address => uint256) unboundedOcsas;
   // user address => bounded Ocsa balance
   mapping(address => uint256) boundedOcsas;
   mapping(address => mapping(address => uint256)) allowances;
-
   // Total shares of this collection
   uint256 collectionRewardRate;
-  // collectionRewardRate / max supply 
+  // collectionRewardRate / max supply
   uint256 individualShare; // to divide by 1e18 to retrieve correct value
   // ocsa buy price in wei
   uint256 tokenPrice;
   // Reward token address
   address rewardToken;
-
   // All rewards deposited by project admin
   ZOCSACheckpoint[] checkpoints;
-  
   // User last claimed checkpoint
   mapping(address => uint256) lastClaimedCheckpointIndex;
   // User available rewards balance
@@ -108,12 +105,12 @@ struct ZOCSAToken {
 
 // OCSA Deployment Infos
 struct ZOCSATokenConfig {
-    string name;
-    string symbol;
-    string description;
-    uint256 maxSupply;
-    uint256 collectionRewardRate;
-    uint256 tokenPrice;
-    address rewardToken;
-    bool transferPaused;
+  string name;
+  string symbol;
+  string description;
+  uint256 maxSupply;
+  uint256 collectionRewardRate;
+  uint256 tokenPrice;
+  address rewardToken;
+  bool transferPaused;
 }

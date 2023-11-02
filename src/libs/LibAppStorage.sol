@@ -7,7 +7,6 @@ struct AppStorage {
   bool diamondInitialized;
   uint256 reentrancyStatus;
   MetaTxContextStorage metaTxContext;
-
   /*
     OCSA Data Storage
   */
@@ -17,14 +16,12 @@ struct AppStorage {
   mapping(address => ZOCSAToken) zOcsas;
   // register all OCSA contract for access rights
   mapping(address => bool) zOcsaApprovedFacades;
-
   /*
     WhiteList Data Storage
   */
-    Whitelist whitelist;
-    // If zero, then the user is not whitelisted. Otherwise, this represents the position of the user in the whitelist + 1
-    mapping(address => uint256) isWhitelisted; // userAddress => isWhitelisted
-
+  Whitelist whitelist;
+  // If zero, then the user is not whitelisted. Otherwise, this represents the position of the user in the whitelist + 1
+  mapping(address => uint256) isWhitelisted; // userAddress => isWhitelisted
   /*
     Diamond Global Data Storage
   */

@@ -12,8 +12,7 @@ import { LibString } from "../libs/LibString.sol";
 
 error ZOCSAInvalidInput();
 
-contract AdminFacet is IAdminFacet, AccessControl {  
-
+contract AdminFacet is IAdminFacet, AccessControl {
   /*
     Global Diamond settings
   */
@@ -22,8 +21,8 @@ contract AdminFacet is IAdminFacet, AccessControl {
    * @dev Sets the treasury address.
    * @param treasury The address to set as the treasury.
    */
-  function setDiamondTreasuryAddress(address treasury) external isDiamondAdmin() {
-    require (treasury != address(0), "Address 0");
+  function setDiamondTreasuryAddress(address treasury) external isDiamondAdmin {
+    require(treasury != address(0), "Address 0");
     AppStorage storage s = LibAppStorage.diamondStorage();
     s.treasury = treasury;
   }
@@ -32,8 +31,8 @@ contract AdminFacet is IAdminFacet, AccessControl {
    * @dev add Diamond Admin privilege to this address.
    * @param newAdmin The address to set as the admin.
    */
-  function addNewDiamondAdmin(address newAdmin) external isDiamondAdmin() {
-    require (newAdmin != address(0), "Address 0");
+  function addNewDiamondAdmin(address newAdmin) external isDiamondAdmin {
+    require(newAdmin != address(0), "Address 0");
     AppStorage storage s = LibAppStorage.diamondStorage();
     s.diamondAdmins[newAdmin] = true;
   }
@@ -42,8 +41,8 @@ contract AdminFacet is IAdminFacet, AccessControl {
    * @dev remove Diamond Admin privilege to this address.
    * @param admin The address to set as the admin.
    */
-  function removeDiamondAdmin(address admin) external isDiamondAdmin() {
-    require (admin != address(0), "Address 0");
+  function removeDiamondAdmin(address admin) external isDiamondAdmin {
+    require(admin != address(0), "Address 0");
     AppStorage storage s = LibAppStorage.diamondStorage();
     s.diamondAdmins[admin] = false;
   }
@@ -52,8 +51,8 @@ contract AdminFacet is IAdminFacet, AccessControl {
    * @dev Sets the address for the OCSA Marketplace.
    * @param OCSAMarketplace The address to set for the OCSA Marketplace.
    */
-  function setOCSAMarketplaceAddress(address OCSAMarketplace) external isDiamondAdmin() {
-    require (OCSAMarketplace != address(0), "Address 0");
+  function setOCSAMarketplaceAddress(address OCSAMarketplace) external isDiamondAdmin {
+    require(OCSAMarketplace != address(0), "Address 0");
     AppStorage storage s = LibAppStorage.diamondStorage();
     s.OCSAMarketplace = OCSAMarketplace;
   }
@@ -66,7 +65,7 @@ contract AdminFacet is IAdminFacet, AccessControl {
   function ZOCSAUpdateProjectDescription(
     address token,
     string memory newDescription
-  ) external isDiamondAdmin() {
+  ) external isDiamondAdmin {
     if (LibString.len(newDescription) == 0) {
       revert ZOCSAInvalidInput();
     }
@@ -79,7 +78,7 @@ contract AdminFacet is IAdminFacet, AccessControl {
    * @param token The token address for which to dispatch rewards.
    * @param amount The amount of rewards to dispatch.
    */
-  function ZOCSADispatchUserReward(address token, uint256 amount) external isDiamondAdmin() {
+  function ZOCSADispatchUserReward(address token, uint256 amount) external isDiamondAdmin {
     if (amount == 0) {
       revert ZOCSAInvalidInput();
     }
@@ -91,7 +90,7 @@ contract AdminFacet is IAdminFacet, AccessControl {
    * @param token The token address for which to change transfer status.
    * @param status the transfer status to update.
    */
-  function ZOCSAUpdateTransferStatus(address token, bool status) external isDiamondAdmin() {
+  function ZOCSAUpdateTransferStatus(address token, bool status) external isDiamondAdmin {
     ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
     t.transferPaused = status;
   }

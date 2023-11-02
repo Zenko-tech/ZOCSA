@@ -18,8 +18,7 @@ error ZOCSANotEnoughAllowance(address owner, address spender);
 /**
  * This is a complex facet that use the ZOCSA facade to launch multiple ZOCSA tokens backed by a single diamond proxy.
  */
-contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {  
-
+contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
   /**
    * @dev Emitted when a new token is deployed.
    */
@@ -29,7 +28,7 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
     IERC20Facet interface implementation
     WRITE FUNCTIONS
   */
-  
+
   /**
    * @dev Mints new ZOCSA tokens.
    * @dev Only whitelisted user can receive Bounded OCSA after KYC / Legal Contract / Payment Received
@@ -38,28 +37,44 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
    * @param to The address to mint tokens to. (need to be whitelisted)
    * @param count The number of tokens to mint.
    */
-  function ZOCSAMint(address token, address from, address to, uint256 count) external onlyZOCSAFacades() {
+  function ZOCSAMint(
+    address token,
+    address from,
+    address to,
+    uint256 count
+  ) external onlyZOCSAFacades {
     LibZOCSA.mint(token, from, to, count);
   }
 
-    /**
+  /**
    * @dev Approve an allowance for the given spender for the given owner wallet.
    * @param account The account address.
    * @param spender The spender address.
    * @param amount The amount to approve.
    */
-  function ZOCSAApprove(address token, address account, address spender, uint256 amount) external onlyZOCSAFacades() {
+  function ZOCSAApprove(
+    address token,
+    address account,
+    address spender,
+    uint256 amount
+  ) external onlyZOCSAFacades {
     LibZOCSA.approve(token, account, spender, amount);
   }
 
-    /**
+  /**
    * @dev Transfer a token.
    * @param caller The caller address.
    * @param from The from address.
    * @param to The to address.
    * @param amount The amount to transfer.
    */
-  function ZOCSATransfer(address token, address caller, address from, address to, uint256 amount) external onlyZOCSAFacades() {
+  function ZOCSATransfer(
+    address token,
+    address caller,
+    address from,
+    address to,
+    uint256 amount
+  ) external onlyZOCSAFacades {
     if (to == address(0)) {
       revert ZOCSAInvalidReceiver(to);
     }
@@ -93,7 +108,7 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
    * @dev Returns the symbol of the token.
    */
   function ZOCSASymbol(address token) external view returns (string memory) {
-    return LibAppStorage.diamondStorage().zOcsas[token].symbol;    
+    return LibAppStorage.diamondStorage().zOcsas[token].symbol;
   }
 
   /**
@@ -123,11 +138,13 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
    * @param account The account address.
    * @param spender The spender address.
    */
-  function ZOCSAAllowance(address token, address account, address spender) external view returns (uint256) {
+  function ZOCSAAllowance(
+    address token,
+    address account,
+    address spender
+  ) external view returns (uint256) {
     return LibAppStorage.diamondStorage().zOcsas[token].allowances[account][spender];
   }
-
-
 
   /*
     IZOCSAFacet interface implementation
@@ -138,14 +155,16 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
    * @dev Deploy new token.
    * @param config Token config.
    */
-  function ZOCSADeployToken(ZOCSATokenConfig memory config) external isDiamondAdmin() returns (address) {
+  function ZOCSADeployToken(
+    ZOCSATokenConfig memory config
+  ) external isDiamondAdmin returns (address) {
     if (
-      LibString.len(config.name) == 0 || 
-      LibString.len(config.symbol) == 0 || 
-      LibString.len(config.description) == 0 || 
+      LibString.len(config.name) == 0 ||
+      LibString.len(config.symbol) == 0 ||
+      LibString.len(config.description) == 0 ||
       config.maxSupply == 0 ||
       config.collectionRewardRate == 0 ||
-      config.tokenPrice == 0 || 
+      config.tokenPrice == 0 ||
       config.rewardToken == address(0)
     ) {
       revert ZOCSAInvalidInput();
@@ -174,22 +193,22 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
   }
 
   /**
-   * @dev Allow user to withdraw their earning 
+   * @dev Allow user to withdraw their earning
    */
   function ZOCSAWithdrawUserEarnings(
     address token,
-    address from, 
-    address to, 
+    address from,
+    address to,
     uint256 amount
-  ) external nonReentrant() onlyZOCSAFacades() {
+  ) external nonReentrant onlyZOCSAFacades {
     LibZOCSA.withdrawUserReward(token, from, to, amount);
   }
 
   /**
    * @notice Bound OCSA to actual owner, which activate the income generating property of OCSA
    * @param amount The amount of OCSA to bound to actual owner.
-  */
-  function ZOCSABoundOCSA(address token, address user, uint256 amount) external onlyZOCSAFacades() {
+   */
+  function ZOCSABoundOCSA(address token, address user, uint256 amount) external onlyZOCSAFacades {
     LibZOCSA.boundUserOCSA(token, user, amount);
   }
 
@@ -199,37 +218,35 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
   */
 
   /**
-    * @dev Returns all deployed nft contracts infos.
-    */
-  function ZOCSAGetAllCollectionsInfos() external view returns (ZOCSAInfos[] memory)
-  {
+   * @dev Returns all deployed nft contracts infos.
+   */
+  function ZOCSAGetAllCollectionsInfos() external view returns (ZOCSAInfos[] memory) {
     return LibZOCSA.getAllCollectionsInfos();
   }
 
   /**
-    * @dev Returns specific nft contracts infos.
-    */
-  function ZOCSAGetCollectionInfos(address token) external view returns (ZOCSAInfos memory)
-  {
+   * @dev Returns specific nft contracts infos.
+   */
+  function ZOCSAGetCollectionInfos(address token) external view returns (ZOCSAInfos memory) {
     return LibZOCSA.getCollectionInfos(token);
-
   }
 
   /**
-    * @dev Get information about a user's OCSA.
-    * @param user The address of the user to return data from.
-    * @return ZOCSAUserInfo Information about the specified ZOCSA collection user ocsa status.
-    */
-  function ZOCSAGetUserInfo(address token, address user) external view returns (ZOCSAUserInfo memory)
-  {
+   * @dev Get information about a user's OCSA.
+   * @param user The address of the user to return data from.
+   * @return ZOCSAUserInfo Information about the specified ZOCSA collection user ocsa status.
+   */
+  function ZOCSAGetUserInfo(
+    address token,
+    address user
+  ) external view returns (ZOCSAUserInfo memory) {
     return LibZOCSA.getUserInfo(token, user);
   }
 
   /**
-    * @dev Returns all OCSAs collections deployed.
-    */
-  function ZOCSAGetAllCollections() external view returns (address[] memory)
-  {
+   * @dev Returns all OCSAs collections deployed.
+   */
+  function ZOCSAGetAllCollections() external view returns (address[] memory) {
     return LibAppStorage.diamondStorage().zOcsaCollections;
   }
 
@@ -269,7 +286,7 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
   }
 
   /**
-   * @dev Returns the reward balance for this collection by this user (all ocsas earnings) 
+   * @dev Returns the reward balance for this collection by this user (all ocsas earnings)
    * @param owner The owner address.
    */
   function ZOCSARewardBalanceOf(address token, address owner) external view returns (uint256) {
@@ -277,7 +294,7 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
   }
 
   /**
-   * @dev Returns the bounded ocsa balance of this user 
+   * @dev Returns the bounded ocsa balance of this user
    * @param owner The owner address.
    */
   function ZOCSABoundedBalanceOf(address token, address owner) external view returns (uint256) {
@@ -285,7 +302,7 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
   }
 
   /**
-   * @dev Returns the unbounded ocsa balance of this user 
+   * @dev Returns the unbounded ocsa balance of this user
    * @param owner The owner address.
    */
   function ZOCSAUnboundedBalanceOf(address token, address owner) external view returns (uint256) {
@@ -316,7 +333,9 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
   /**
    * @dev Returns all checkpoints for this collection
    */
-  function ZOCSAGetCollectionCheckpoints(address token) external view returns (ZOCSACheckpoint[] memory) {
+  function ZOCSAGetCollectionCheckpoints(
+    address token
+  ) external view returns (ZOCSACheckpoint[] memory) {
     return LibAppStorage.diamondStorage().zOcsas[token].checkpoints;
   }
 }

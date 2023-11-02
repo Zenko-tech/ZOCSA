@@ -18,18 +18,14 @@ contract InitDiamond {
     }
     s.diamondInitialized = true;
 
-
     address contractAdmin = LibDiamond.contractOwner();
     s.treasury = _ZenkoTreasury;
     s.diamondAdmins[contractAdmin] = true;
 
     // Create the first and only Zenko ZOCSA WhiteList
     address[] memory emptArr = new address[](0);
-    s.whitelist = Whitelist({
-      name: "Zenko OCSA Whitelist",
-      addresses: emptArr
-    });
-    
+    s.whitelist = Whitelist({ name: "Zenko OCSA Whitelist", addresses: emptArr });
+
     emit InitializeDiamond(msg.sender);
   }
 }
