@@ -13,10 +13,6 @@ library LibZOCSA {
    * @dev Emitted when a token is minted.
    */
   event ZOCSAMinted(address token, address from, address to, uint256 amount);
-  /**
-   * @dev Emitted when a token is burned.
-   */
-  event ZOCSABurned(address token, address from, uint256 amount);
     /**
    * @dev Emitted when ocsa are bounded to a new user.
    */
@@ -59,9 +55,8 @@ library LibZOCSA {
     ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
     require(LibWhitelist.isWhitelisted(LibAppStorage.diamondStorage().collectionWhiteListId[token], to) > 0, "ZOCSA: Recipient not whitelisted !");
     require((amount + t.totalSupply) <= t.maxSupply, "ZOCSA: Cannot mint new OCSA, max supply reached");
-    
-    _onAssetCountChange(token, to);
 
+    _calculateDividend(token, to);
     bool success = IERC20(t.rewardToken).transferFrom(from, t.collectionTreasury, (t.tokenPrice * amount));
     if (success == false) { 
         revert ZOCSANotEnoughBalance(token, from, to, amount);
@@ -89,8 +84,8 @@ library LibZOCSA {
     ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
     require(LibWhitelist.isWhitelisted(LibAppStorage.diamondStorage().collectionWhiteListId[token], user) > 0, "ZOCSA: User not whitelisted !");
     require(t.unboundedOcsas[user] >= amount, "ZOCSA: Not enought unbounded OCSA to bound, consulte available balance before retrying");
-    
-    _onAssetCountChange(token, user);
+
+    _calculateDividend(token, user);
 
     t.unboundedOcsas[user] -= amount;
     t.boundedOcsas[user] += amount;
@@ -232,7 +227,6 @@ library LibZOCSA {
           uint256 userDividend = t.boundedOcsas[user] * checkpoint.rewardPerToken;
           totalDividend += userDividend;
       }
-      totalDividend += t.dividendsTempBalance[user];
       totalDividend += t.dividends[user];
       return totalDividend;
   }
@@ -348,7 +342,7 @@ library LibZOCSA {
   function _depositRewardNoRemainder(address token, address from, uint256 amount, uint256 totalSupply, uint256 unboundedOcsaSupply, uint256 boundedOcsaSupply, uint256 maxSupply) internal {
       ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
         uint256 adjustedAmount = (amount / maxSupply) * boundedOcsaSupply;
-
+        
       // The deposited amount is saved in the contract's balance
       t.checkpoints.push(ZOCSACheckpoint({
           timestamp: block.timestamp,
@@ -412,50 +406,9 @@ library LibZOCSA {
         
         t.lastClaimedCheckpointIndex[user] = i + 1;
     }
-    // if any user diff supply minted between checkpoint, add temp balance and reset
-    if (t.dividendsTempBalance[user] > 0)
-    {
-        totalDividend += t.dividendsTempBalance[user];
-        t.dividendsTempBalance[user] = 0;
-    }
     if (totalDividend > 0)
     {
         t.dividends[user] += totalDividend;
-    }
-  }
-
-  /**
-    * @dev Handle changes in asset count for a user.
-    * @dev call in mint() and transfer() (potential burn())
-    * @param token The address of the ZOCSA token.
-    * @param user The address of the user whose asset count has changed.
-    */
-  function _onAssetCountChange(address token, address user) internal {
-    ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
-    if(t.balances[user] > 0)
-    {
-      uint256 totalDividend = 0;
-      for (uint256 i = t.lastClaimedCheckpointIndex[user]; i < t.checkpoints.length; i++) {
-          ZOCSACheckpoint memory checkpoint = t.checkpoints[i];
-          uint256 userDividend = t.boundedOcsas[user] * checkpoint.rewardPerToken;
-          totalDividend += userDividend;
-          
-          t.lastClaimedCheckpointIndex[user] = i + 1;
-      }   
-      if (totalDividend > 0)
-      {
-          t.dividendsTempBalance[user] += totalDividend;
-      }
-      if (t.dividends[user] > 0)
-      {
-          t.dividendsTempBalance[user] += t.dividends[user];
-          t.dividends[user] = 0;
-      }
-    }
-    // user has no shares at this checkpoint
-    else 
-    {
-        t.lastClaimedCheckpointIndex[user] = t.checkpoints.length;
     }
   }
 
@@ -469,11 +422,11 @@ library LibZOCSA {
       // This function can be called before an OCSA transfer to update rewards for both the sender and receiver
       if(from != address(0))
       {
-          _onAssetCountChange(token, from);
+          _calculateDividend(token, from);
       }
       if (to != address(0))
       {
-          _onAssetCountChange(token, to);
+          _calculateDividend(token, to);
       }
   }
 }

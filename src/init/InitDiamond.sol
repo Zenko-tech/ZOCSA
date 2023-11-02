@@ -17,9 +17,7 @@ contract InitDiamond {
     }
     s.diamondInitialized = true;
 
-    /*
-        TODO: add custom initialization logic here
-    */
+
     address contractAdmin = LibDiamond.contractOwner();
     s.treasury = _ZenkoTreasury;
     s.diamondAdmins[contractAdmin] = true;

@@ -16,17 +16,6 @@ struct Whitelist {
     bool addZenkoWhiteList;
 }
 
-// OCSA Reward Checkpoint
-struct ZOCSACheckpoint {
-    uint256 timestamp;
-    uint256 totalAmount;
-    uint256 depositedAmount;
-    uint256 rewardPerToken;
-    uint256 totalSupplyAtTime;
-    uint256 boundedSupplyAtTime;
-    uint256 unboundedSupplyAtTime;
-}
-
 // OCSA Collection display info
 struct ZOCSAInfos {
   address collectionAddress;
@@ -70,6 +59,17 @@ struct ZOCSAUserInfo {
   uint256 actualCheckpointsIndex;
 }
 
+// OCSA Reward Checkpoint
+struct ZOCSACheckpoint {
+  uint256 timestamp;
+  uint256 totalAmount;
+  uint256 depositedAmount;
+  uint256 rewardPerToken;
+  uint256 totalSupplyAtTime;
+  uint256 boundedSupplyAtTime;
+  uint256 unboundedSupplyAtTime;
+}
+
 // OCSA Token Collection Info
 struct ZOCSAToken {
   string name;
@@ -106,8 +106,8 @@ struct ZOCSAToken {
   
   // User last claimed checkpoint
   mapping(address => uint256) lastClaimedCheckpointIndex;
-  // User Temporary balance used to store previous rewards before new asset mint 
-  mapping(address => uint256) dividendsTempBalance;
+  // // User Temporary balance used to store previous rewards before new asset mint 
+  // mapping(address => uint256) dividendsTempBalance;
   // User available rewards balance
   mapping(address => uint256) dividends;
   // remainder of reward dispatch, stored when full supply reached for next drop
