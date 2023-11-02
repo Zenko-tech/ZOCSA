@@ -6,12 +6,6 @@ Diamond Smart Contracts using [Gemforge](https://gemforge.xyz) with [Foundry](ht
 The Zenko OCSA diamond is designed for the creation and management of ERC20 dividend sharing tokens. The protocol is tailored for Zenko's internal use, and can be leveraged by partners through the deployment of a second diamond to issue digital shares in their companies without the complexities of traditional share governance. 
 The core functionality enables revenue sharing from various solutions and departments, reflecting a decentralized financial (DeFi) approach to corporate revenue distribution.
 
-![Contracts Structure](https://github.com/Zenko-tech/Contracts/blob/main/_docs/Contracts_Structure.png)
-
-![User Flow](https://github.com/Zenko-tech/Contracts/blob/main/_docs/User_Flow.png)
-
-![Financial Flow](https://github.com/Zenko-tech/Contracts/blob/main/_docs/Financial_Flow.png)
-
 ## System Components
 
 ### Facets
