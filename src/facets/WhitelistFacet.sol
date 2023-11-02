@@ -4,11 +4,10 @@ pragma solidity >=0.8.21;
 import { Whitelist } from "../shared/Structs.sol";
 import { LibWhitelist } from "../libs/LibWhitelist.sol";
 import { AccessControl } from "../shared/AccessControl.sol";
-import { ReentrancyGuard } from "../shared/ReentrancyGuard.sol";
 import { LibAppStorage, AppStorage } from "../libs/LibAppStorage.sol";
 import { LibString } from "../libs/LibString.sol";
 
-contract WhitelistFacet is AccessControl, ReentrancyGuard {
+contract WhitelistFacet is AccessControl {
     event WhitelistUsersAdded(address[] _users);
     event WhitelistUsersRemoved(address[] _users);
 
@@ -24,17 +23,17 @@ contract WhitelistFacet is AccessControl, ReentrancyGuard {
         emit WhitelistUsersAdded(_users);
     }
 
-    /**
-     * @dev Removes addresses from a specific whitelist.
-     * @param _users The addresses to be removed from the whitelist.
-     */
-    function removeAddressesFromWhitelist(address[] calldata _users) external isDiamondAdmin() {
-        require(_users.length > 0, "WhitelistFacet: _users must contain more than 0 address");
+    // /**
+    //  * @dev Removes addresses from a specific whitelist.
+    //  * @param _users The addresses to be removed from the whitelist.
+    //  */
+    // function removeAddressesFromWhitelist(address[] calldata _users) external isDiamondAdmin() {
+    //     require(_users.length > 0, "WhitelistFacet: _users must contain more than 0 address");
 
-        LibWhitelist._removeAddressesFromWhitelist(_users);
+    //     LibWhitelist._removeAddressesFromWhitelist(_users);
 
-        emit WhitelistUsersRemoved(_users);
-    }
+    //     emit WhitelistUsersRemoved(_users);
+    // }
 
     // 0 is non whitelisted, else return position in whitelist
     /**

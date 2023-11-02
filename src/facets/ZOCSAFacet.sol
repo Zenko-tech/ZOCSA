@@ -167,6 +167,7 @@ contract ZOCSAFacet is IZOCSAFacet, AccessControl, ReentrancyGuard {
     t.rewardToken = config.rewardToken;
     uint256 _tokenIndividualShare = (t.collectionRewardRate * 1e18) / t.maxSupply;
     t.individualShare = _tokenIndividualShare;
+    t.transferPaused = config.transferPaused;
 
     emit ZOCSANewToken(token);
     return token;

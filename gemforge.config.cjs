@@ -167,7 +167,7 @@ module.exports = {
       // Wallet to use for deployment
       wallet: 'walletTest',
       // Initialization method arguments
-      initArgs: [process.env.ADMIN_MINTER]
+      initArgs: [process.env.ZENKO_TREASURY]
     }
   }
 }

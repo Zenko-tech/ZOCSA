@@ -80,17 +80,10 @@ npx prettier --write --plugin=prettier-plugin-solidity 'src/**/*.sol'
 
 
 ### TODO/ WIP :
-    -- for later updates --
-[] Implementation de l'interface IERC20Receiver afin de pouvoir recevoir des coins avec safetransferfrom (update for market place)
-[] Transfer / safeTransfer implemantation (update for market place)
+[] Implementation de l'interface IERC20Receiver afin de pouvoir recevoir des coins avec safetransferfrom 
 
 
-
-[] ensure msg.sender / from-to on facade 
 [] if destination is contract, ensure mint to and transfer to can handle transfer : _checkOnERC20Received()
-[] Remove TempBalance System on assetCountChange (make sure _calculateDividend() do the job)
-[] add pausable status on OCSA transfer 
-[] add free ocsa mint for zenko admin wallet
 
 ------------------------------------------------------
 [~] /!\ potential bound ocsa / unbounded ? bound reverse a nouveau les gains sur TX d'activation ?

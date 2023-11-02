@@ -99,12 +99,11 @@ struct ZOCSAToken {
   
   // User last claimed checkpoint
   mapping(address => uint256) lastClaimedCheckpointIndex;
-  // // User Temporary balance used to store previous rewards before new asset mint 
-  // mapping(address => uint256) dividendsTempBalance;
   // User available rewards balance
   mapping(address => uint256) dividends;
   // remainder of reward dispatch, stored when full supply reached for next drop
   uint256 leftoverReward;
+  bool transferPaused;
 }
 
 // OCSA Deployment Infos
@@ -116,4 +115,5 @@ struct ZOCSATokenConfig {
     uint256 collectionRewardRate;
     uint256 tokenPrice;
     address rewardToken;
+    bool transferPaused;
 }

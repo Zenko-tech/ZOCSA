@@ -85,4 +85,14 @@ contract AdminFacet is IAdminFacet, AccessControl {
     }
     LibZOCSA.dispatchProjectReward(token, msg.sender, amount);
   }
+
+  /**
+   * @dev Change transfer status of specific ocsa collection.
+   * @param token The token address for which to change transfer status.
+   * @param status the transfer status to update.
+   */
+  function ZOCSAUpdateTransferStatus(address token, bool status) external isDiamondAdmin() {
+    ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
+    t.transferPaused = status;
+  }
 }

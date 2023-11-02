@@ -121,6 +121,7 @@ library LibZOCSA {
     */
   function transfer(address token, address from, address to, uint256 amount) internal {
     ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
+    require(t.transferPaused == false, "ZOCSA: Transfer is inactive on this collection");
     if (amount > t.balances[from]) { revert ZOCSANotEnoughBalance(token, from, to, amount); }
     _onOCSATransfer(token, from, to);
 
@@ -180,7 +181,8 @@ library LibZOCSA {
       ZOCSAToken storage t = LibAppStorage.diamondStorage().zOcsas[token];
       _calculateDividend(token, from);
       require(t.dividends[from] >= amount, "ZOCSA: No enough dividends to withdraw");
-      
+      require(t.dividends[address(this)] >= amount, "ZOCSA: No enough contract bal to withdraw");
+
       t.dividends[from] -= amount;
       t.dividends[address(this)] -= amount;
 

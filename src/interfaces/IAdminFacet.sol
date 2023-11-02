@@ -43,4 +43,10 @@ interface IAdminFacet {
    */
   function ZOCSADispatchUserReward(address token, uint256 amount) external;
 
+  /**
+   * @dev Change transfer status of specific ocsa collection.
+   * @param token The token address for which to change transfer status.
+   * @param status the transfer status to update.
+   */
+  function ZOCSAUpdateTransferStatus(address token, bool status) external;
 }

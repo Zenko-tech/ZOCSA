@@ -50,7 +50,8 @@ contract ZOCSATest is TestBaseContract {
       _maxSupply, //maxSupply
       10, //collectionRewardRate
       1 ether, // tokenPrice = 1e18
-      address(tERC20) // rewardToken
+      address(tERC20), // rewardToken
+      false
     ))));
     // admin reward dispatcher Approve Diamond with max bal to ease testing 
     tERC20.approve(address(diamond), type(uint256).max);
@@ -83,7 +84,8 @@ contract ZOCSATest is TestBaseContract {
       5000, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(tERC20) // rewardToken
+      address(tERC20), // rewardToken
+      false
     ));
 
     Vm.Log[] memory entries = vm.getRecordedLogs();
@@ -130,7 +132,8 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(tERC20) // rewardToken
+      address(tERC20), // rewardToken
+      true
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -141,7 +144,8 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(tERC20) // rewardToken 
+      address(tERC20), // rewardToken
+      true
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -152,7 +156,8 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(tERC20) // rewardToken
+      address(tERC20), // rewardToken
+      true
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -163,7 +168,8 @@ contract ZOCSATest is TestBaseContract {
       0, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(tERC20) // rewardToken
+      address(tERC20), // rewardToken
+      true
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -174,7 +180,8 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       0, //collectionRewardRate
       1, // tokenPrice 
-      address(tERC20) // rewardToken
+      address(tERC20), // rewardToken
+      true
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -185,7 +192,8 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       0, // tokenPrice 
-      address(tERC20) // rewardToken
+      address(tERC20), // rewardToken
+      true
     ));
 
     vm.expectRevert( abi.encodePacked(ZOCSAInvalidInput.selector) );
@@ -196,7 +204,8 @@ contract ZOCSATest is TestBaseContract {
       100, //maxSupply
       10, //collectionRewardRate
       1, // tokenPrice 
-      address(0) // rewardToken
+      address(0), // rewardToken
+      true
     ));
   }
 
@@ -275,6 +284,19 @@ contract ZOCSATest is TestBaseContract {
   //   vm.stopPrank();
 
   // }
+
+  function testShouldntBeAbleToTransfer() public {
+    _deployFacade(100);
+    vm.startPrank(adminMinter);
+    token.mint(account0, 1);
+    vm.stopPrank();
+    diamond.ZOCSAUpdateTransferStatus(address(token), true);
+    vm.startPrank(account0);
+    vm.expectRevert(bytes("ZOCSA: Transfer is inactive on this collection"));
+    token.transfer(account1, 1);
+    vm.stopPrank();
+
+  }
 
 /* -------------------------------------------------------------------------- */
 /*                       Test OCSA Admin Dispatch Reward                      */

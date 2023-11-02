@@ -24,11 +24,12 @@ contract InitDiamond {
     s.diamondAdmins[contractAdmin] = true;
 
     // Create the first and only Zenko ZOCSA WhiteList
-    address[] memory whitelist = new address[](0);
+    address[] memory emptArr = new address[](0);
     s.whitelist = Whitelist({
       name: "Zenko OCSA Whitelist",
-      addresses: whitelist
+      addresses: emptArr
     });
+    
     emit InitializeDiamond(msg.sender);
   }
 }
