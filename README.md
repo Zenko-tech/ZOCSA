@@ -65,13 +65,13 @@ In this system, OCSA tokens can exist in two states: bound (bounded) and unbound
 The logic behind this system allows for the differentiation of tokens based on their eligibility for dividend distribution and ensures that only verified shareholders can receive dividends. This mechanism also adds a layer of security and regulatory compliance by incorporating KYC checks into the token binding process.
 
 ### Audit Scope : 
-Zenko-tech/ZOCSA/src/facades/*.sol
-Zenko-tech/ZOCSA/src/facets/*.sol
-Zenko-tech/ZOCSA/src/init/*.sol
-Zenko-tech/ZOCSA/src/interfaces/*.sol
-Zenko-tech/ZOCSA/src/libs/*.sol
-Zenko-tech/ZOCSA/src/shared/*.sol
-Zenko-tech/ZOCSA/test/ZOCSATest.sol
+- Zenko-tech/ZOCSA/src/facades/*.sol
+- Zenko-tech/ZOCSA/src/facets/*.sol
+- Zenko-tech/ZOCSA/src/init/*.sol
+- Zenko-tech/ZOCSA/src/interfaces/*.sol
+- Zenko-tech/ZOCSA/src/libs/*.sol
+- Zenko-tech/ZOCSA/src/shared/*.sol
+- Zenko-tech/ZOCSA/test/ZOCSATest.sol
 
 
 
